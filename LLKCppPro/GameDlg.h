@@ -49,8 +49,8 @@ protected:
 	int nTop = 50;
 	int nElemW = 40;
 	int nElemH = 40;
-	int RowElementNum = 16;
-	int ColElementNum = 10;
+	int RowElementNum = 10;
+	int ColElementNum = 16;
 
 	CRect m_rtGameRect;
 

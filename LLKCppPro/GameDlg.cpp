@@ -97,16 +97,12 @@ BOOL CGameDlg::OnInitDialog()
 
 void CGameDlg::InitBackground()
 {
-	//gamecontrol.m_pGameMap = gamelogic.InitMap();
 	//if (!bitmap.Attach(hbitmap)) //将位图对象和用户定义类相联系
 	//	MessageBox("ATTACH FAIL!");//如果Attach调用失败弹出信息框提示
 	CBitmap bmpMain;
 	//bmpMain.LoadBitmapW(IDB_BITMAP1);
 	HBITMAP hbitmap =(HBITMAP)::LoadImage(NULL, _T("theme\\picture\\background.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	bmpMain.Attach(hbitmap);
-
-	 CClientDC dc(this);
-	//m_dcMem.CreateCompatibleDC(&dc);
 	m_dcMem.SelectObject(bmpMain);
 }
 
@@ -174,70 +170,78 @@ void CGameDlg::UpdateMap()
 
 void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	m_rtGameRect.top = 50;
-	m_rtGameRect.bottom = 600;
-	m_rtGameRect.left = 20;
-	m_rtGameRect.right = 800;
+	m_rtGameRect.top = nTop;
+	m_rtGameRect.bottom = nTop + nElemH*RowElementNum;
+	m_rtGameRect.left = nLeft;
+	m_rtGameRect.right = nLeft + nElemW*ColElementNum;
 
 	if (point.y<m_rtGameRect.top || point.y>m_rtGameRect.bottom
 		|| point.x <m_rtGameRect.left || point.x >m_rtGameRect.right)
 	{
-		return CDialogEx::OnLButtonUp(nFlags, point);
+		//return CDialogEx::OnLButtonUp(nFlags, point);
 	}
 	else
 	{
 		int row = (point.y - nTop) / nElemW;
 		int col = (point.x - nLeft) / nElemH;
-		CClientDC dc(this);
-		CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
-		dc.SelectObject(&penRect);//将pen放到dc上
-		dc.SelectStockObject(NULL_BRUSH);
-		dc.Rectangle(nLeft+nElemW*col, nTop+nElemH*row, nLeft + nElemW*col +40, nTop + nElemH*row + 40);//画一个矩形
-
-		/*Vertex V = { row,col };
-		gamecontrol.PushVex(V);
-
-		UpdateMap();
-		dc.BitBlt(0, 0, RowElementNum*nElemW + nLeft, ColElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);*/
-		//CDialogEx::OnLButtonUp(nFlags, point);
-	}
-	if (m_bFirstPoint.nRow == 11)
-	{
-		m_bFirstPoint.nRow = (point.y - nTop) / nElemW;
-		m_bFirstPoint.nCol = (point.x - nLeft) / nElemH;
-	}
-	else
-	{
-		m_bSecPoint.nRow = (point.y - nTop) / nElemW;
-		m_bSecPoint.nCol = (point.x - nLeft) / nElemH;
-		if (m_bFirstPoint.nRow == m_bSecPoint.nRow&&
-			m_bFirstPoint.nCol == m_bSecPoint.nCol)
+		if (gamecontrol.m_pGameMap[row][col] != BLANK)
 		{
-			//do nothing except repaint dc
 			CClientDC dc(this);
-			UpdateMap();
-			dc.BitBlt(0, 0, RowElementNum*nElemW + nLeft, ColElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
-			m_bFirstPoint.nRow = 11;
+			CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
+			dc.SelectObject(&penRect);//将pen放到dc上
+			dc.SelectStockObject(NULL_BRUSH);
+			dc.Rectangle(nLeft + nElemW*col, nTop + nElemH*row, nLeft + nElemW*col + 40, nTop + nElemH*row + 40);//画一个矩形
 		}
-		else
+
+		if ((gamecontrol.m_pGameMap[(point.y - nTop) / nElemW][(point.x - nLeft) / nElemH] != BLANK))
 		{
-			if (gamelogic.IsLink(gamecontrol.m_pGameMap,m_bFirstPoint,m_bSecPoint))
+			if (m_bFirstPoint.nRow == 11)//一共10行，不会用到11
 			{
-				gamecontrol.PushVex(m_bFirstPoint);
-				gamecontrol.PushVex(m_bSecPoint);
-				CClientDC dc(this);
-				UpdateMap();
-				dc.BitBlt(0, 0, RowElementNum*nElemW + nLeft, ColElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
-				m_bFirstPoint.nRow = 11;
+				m_bFirstPoint.nRow = (point.y - nTop) / nElemW;
+				m_bFirstPoint.nCol = (point.x - nLeft) / nElemH;
 			}
 			else
 			{
-				CClientDC dc(this);
-				UpdateMap();
-				dc.BitBlt(0, 0, RowElementNum*nElemW + nLeft, ColElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
-				m_bFirstPoint.nRow = 11;
-			}
-		}
+				m_bSecPoint.nRow = (point.y - nTop) / nElemW;
+				m_bSecPoint.nCol = (point.x - nLeft) / nElemH;
+				if (m_bFirstPoint.nRow == m_bSecPoint.nRow&&
+					m_bFirstPoint.nCol == m_bSecPoint.nCol)
+				{
+					//do nothing except repaint dc
+					CClientDC dc(this);
+					UpdateMap();
+					dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+					m_bFirstPoint.nRow = 11;
+				}
+				else
+				{
+					if (gamelogic.IsSame(gamecontrol.m_pGameMap, m_bFirstPoint, m_bSecPoint) &&
+						gamelogic.IsLink(gamecontrol.m_pGameMap, m_bFirstPoint, m_bSecPoint))
+					{
+						CClientDC dc(this);
+						CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
+						dc.SelectObject(&penRect);//将pen放到dc上
+						dc.SelectStockObject(NULL_BRUSH);
+						dc.MoveTo(m_bFirstPoint.nCol * 40 + 20 + 20, m_bFirstPoint.nRow * 40 + 50 + 20);
+						dc.LineTo(m_bSecPoint.nCol * 40 + 20 + 20, m_bSecPoint.nRow * 40 + 50 + 20);
+						for (int i = 0;i < 60000000;i++) {  }
+						gamecontrol.PushVex(m_bFirstPoint);
+						gamecontrol.PushVex(m_bSecPoint);
+						//CClientDC dc(this);
+						UpdateMap();
+						dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+						m_bFirstPoint.nRow = 11;
+					}
+					else
+					{
+						CClientDC dc(this);
+						UpdateMap();
+						dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+						m_bFirstPoint.nRow = 11;
+					}//else
+				}//else
+			}//else
+		}//if
 	}
 }
 
@@ -250,10 +254,11 @@ void CGameDlg::OnBnClickedButton1()
 
 void CGameDlg::OnBnClickedButton4()
 {
-	gamecontrol.m_pGameMap = gamelogic.InitMap();
+	gamecontrol.ResetMap();
+	//gamecontrol.m_pGameMap = gamelogic.InitMap();
 	CClientDC dc(this); 
 	UpdateMap();
-	dc.BitBlt( 0, 0, RowElementNum*nElemW+nLeft, ColElementNum*nElemH+nTop, &m_dcMem, 0, 0, SRCCOPY);
+	dc.BitBlt( 0, 0, ColElementNum*nElemW+nLeft, RowElementNum*nElemH+nTop, &m_dcMem, 0, 0, SRCCOPY);
 }
 
 void CGameDlg::OnBnClickedOk()

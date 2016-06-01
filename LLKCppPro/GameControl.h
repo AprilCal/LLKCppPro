@@ -11,6 +11,7 @@ public:
 	int **m_pGameMap;
 	int GetElement(int nRow, int nCol);
 	bool PushVex(Vertex V);
+	int** ResetMap();
 
 	Vertex m_svSelFst;//first vex selected
 	Vertex m_svSelSec;//second vex selected

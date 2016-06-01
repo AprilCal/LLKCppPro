@@ -30,3 +30,23 @@ bool CGameControl::PushVex(Vertex V)
 	}
 	return false;
 }
+
+int** CGameControl::ResetMap()
+{
+	srand((int)time(NULL));
+	//exchange two number randomly
+	int nVertexNum = 16*10;
+	for (int i = 0;i < nVertexNum;i++)
+	{
+		//get two coordinates
+		int nIndex1 = rand() % nVertexNum;
+		int nIndex2 = rand() % nVertexNum;
+		//exchange value of two number
+		int nTmp = m_pGameMap[nIndex1 / 16][nIndex1 %16];
+		m_pGameMap[nIndex1 / 16][nIndex1 % 16] = m_pGameMap[nIndex2 / 16][nIndex2 % 16];
+		m_pGameMap[nIndex2 / 16][nIndex2 % 16] = nTmp;
+	}
+
+	//how many
+	return m_pGameMap;
+}
