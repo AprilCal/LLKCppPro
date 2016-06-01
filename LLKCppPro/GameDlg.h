@@ -57,8 +57,8 @@ protected:
 	CGameLogic gamelogic;
 	CGameControl gamecontrol;
 
-	Vertex m_bFirstPoint;
-	Vertex m_bSecPoint;
+	Vertex m_bFirstPoint = {11,0};
+	Vertex m_bSecPoint = {11,0};
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();

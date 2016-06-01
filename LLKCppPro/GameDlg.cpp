@@ -78,6 +78,7 @@ END_INTERFACE_MAP()
 
 BOOL CGameDlg::OnInitDialog()
 {
+	gamecontrol.m_pGameMap = gamelogic.InitMap();
 	InitDC();
 	//InitBackground();
 	UpdateWindow();
@@ -96,7 +97,7 @@ BOOL CGameDlg::OnInitDialog()
 
 void CGameDlg::InitBackground()
 {
-
+	//gamecontrol.m_pGameMap = gamelogic.InitMap();
 	//if (!bitmap.Attach(hbitmap)) //将位图对象和用户定义类相联系
 	//	MessageBox("ATTACH FAIL!");//如果Attach调用失败弹出信息框提示
 	CBitmap bmpMain;
@@ -144,22 +145,18 @@ void  CGameDlg::UpdateWindow()
 void CGameDlg::InitElement()
 {
 	CClientDC dc(this);
-	//m_dcMask.CreateCompatibleDC(&dc);
-	//m_dcElement.CreateCompatibleDC(&dc);
 
 	HANDLE hMask=::LoadImageW(NULL, _T("theme\\picture\\Elements-mask.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	m_dcMask.SelectObject(hMask);
-	//m_dcMem.BitBlt(400, 290, 40, 400, &m_dcMask, 0, 0, SRCPAINT);
 
 	HANDLE hBmp = ::LoadImageW(NULL, _T("theme\\picture\\Elements.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	m_dcElement.SelectObject(hBmp);
-	//m_dcMem.BitBlt(400, 290, 40, 400, &m_dcElement, 0, 0, SRCAND);
 }
 
 void CGameDlg::UpdateMap()
 {
 	InitBackground();
-	gamecontrol.m_pGameMap = gamelogic.InitMap();
+	//gamecontrol.m_pGameMap = gamelogic.InitMap();
 	for (int i = 0;i < CGameControl::s_nRows;i++)
 	{
 		for (int j = 0;j < CGameControl::s_nCols;j++)
@@ -177,7 +174,6 @@ void CGameDlg::UpdateMap()
 
 void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	m_rtGameRect.top = 50;
 	m_rtGameRect.bottom = 600;
 	m_rtGameRect.left = 20;
@@ -190,7 +186,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	else
 	{
-		int row = (point.y - nTop) / nElemH;
+		int row = (point.y - nTop) / nElemW;
 		int col = (point.x - nLeft) / nElemH;
 		CClientDC dc(this);
 		CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
@@ -198,38 +194,63 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 		dc.SelectStockObject(NULL_BRUSH);
 		dc.Rectangle(nLeft+nElemW*col, nTop+nElemH*row, nLeft + nElemW*col +40, nTop + nElemH*row + 40);//画一个矩形
 
+		/*Vertex V = { row,col };
+		gamecontrol.PushVex(V);
+
 		UpdateMap();
+		dc.BitBlt(0, 0, RowElementNum*nElemW + nLeft, ColElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);*/
 		//CDialogEx::OnLButtonUp(nFlags, point);
 	}
-	/*if (m_bFirstPoint.nCol!=0)
+	if (m_bFirstPoint.nRow == 11)
 	{
-		m_bFirstPoint.nRow = (point.y - nTop) / nElemH;
+		m_bFirstPoint.nRow = (point.y - nTop) / nElemW;
 		m_bFirstPoint.nCol = (point.x - nLeft) / nElemH;
 	}
 	else
 	{
-		bool bSuc = false;
-		if (bSuc == true)
+		m_bSecPoint.nRow = (point.y - nTop) / nElemW;
+		m_bSecPoint.nCol = (point.x - nLeft) / nElemH;
+		if (m_bFirstPoint.nRow == m_bSecPoint.nRow&&
+			m_bFirstPoint.nCol == m_bSecPoint.nCol)
 		{
+			//do nothing except repaint dc
+			CClientDC dc(this);
 			UpdateMap();
+			dc.BitBlt(0, 0, RowElementNum*nElemW + nLeft, ColElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+			m_bFirstPoint.nRow = 11;
 		}
-	}*/
+		else
+		{
+			if (gamelogic.IsLink(gamecontrol.m_pGameMap,m_bFirstPoint,m_bSecPoint))
+			{
+				gamecontrol.PushVex(m_bFirstPoint);
+				gamecontrol.PushVex(m_bSecPoint);
+				CClientDC dc(this);
+				UpdateMap();
+				dc.BitBlt(0, 0, RowElementNum*nElemW + nLeft, ColElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+				m_bFirstPoint.nRow = 11;
+			}
+			else
+			{
+				CClientDC dc(this);
+				UpdateMap();
+				dc.BitBlt(0, 0, RowElementNum*nElemW + nLeft, ColElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+				m_bFirstPoint.nRow = 11;
+			}
+		}
+	}
 }
 
 
 void CGameDlg::OnBnClickedButton1()
 {
-	// TODO: 在此添加控件通知处理程序代码
-	CClientDC dc(this);
-	CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
-	dc.SelectObject(&penRect);//将pen放到dc上
-	dc.SelectStockObject(NULL_BRUSH);
-	dc.Rectangle(100, 100, 200, 200);//画一个矩形
+
 }
 
 
 void CGameDlg::OnBnClickedButton4()
 {
+	gamecontrol.m_pGameMap = gamelogic.InitMap();
 	CClientDC dc(this); 
 	UpdateMap();
 	dc.BitBlt( 0, 0, RowElementNum*nElemW+nLeft, ColElementNum*nElemH+nTop, &m_dcMem, 0, 0, SRCCOPY);

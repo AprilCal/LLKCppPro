@@ -1,4 +1,5 @@
 #pragma once
+#include "global.h"
 class CGameControl
 {
 public:
@@ -9,6 +10,10 @@ public:
 	static int s_nPicNum;
 	int **m_pGameMap;
 	int GetElement(int nRow, int nCol);
+	bool PushVex(Vertex V);
+
+	Vertex m_svSelFst;//first vex selected
+	Vertex m_svSelSec;//second vex selected
 private:
 };
 
