@@ -35,16 +35,17 @@ int** CGameControl::ResetMap()
 {
 	srand((int)time(NULL));
 	//exchange two number randomly
-	int nVertexNum = 16*10;
+	int nVertexNum = 17*11;
 	for (int i = 0;i < nVertexNum;i++)
 	{
 		//get two coordinates
 		int nIndex1 = rand() % nVertexNum;
 		int nIndex2 = rand() % nVertexNum;
+		if (nIndex1/17 == 0 || nIndex1%17 == 0 || nIndex2/17 == 0 || nIndex2%17 == 0) continue;
 		//exchange value of two number
-		int nTmp = m_pGameMap[nIndex1 / 16][nIndex1 %16];
-		m_pGameMap[nIndex1 / 16][nIndex1 % 16] = m_pGameMap[nIndex2 / 16][nIndex2 % 16];
-		m_pGameMap[nIndex2 / 16][nIndex2 % 16] = nTmp;
+		int nTmp = m_pGameMap[nIndex1 / 17][nIndex1 %17];
+		m_pGameMap[nIndex1 / 17][nIndex1 % 17] = m_pGameMap[nIndex2 / 17][nIndex2 % 17];
+		m_pGameMap[nIndex2 / 17][nIndex2 % 17] = nTmp;
 	}
 
 	//how many

@@ -82,8 +82,42 @@ int** CGameLogic::InitMap()
 		pGameMap[nIndex2 / nCols][nIndex2 % nCols] = nTmp;
 	}
 
+	//define true GameMap
+	int** TruepGameMap = new int*[nRows + 2];
+	if (NULL == TruepGameMap)
+	{
+		//TODO:
+		//define CGameException
+	}
+	else
+	{
+		for (int i = 0;i < nRows + 2;i++)
+		{
+			TruepGameMap[i] = new int[nCols+2];
+			if (NULL == TruepGameMap)
+			{
+				//TODO:
+				//throw CGameException
+			}
+			memset(TruepGameMap[i], NULL, sizeof(int)*(nCols+2));
+		}
+	}
+	for (int i = 0;i < nRows + 2;i++)
+	{
+		for (int j = 0;j < nCols + 2;j++)
+		{
+			TruepGameMap[i][j] = BLANK;
+		}
+	}
+	for (int i = 0;i < nRows;i++)
+	{
+		for (int j = 0;j < nCols;j++)
+		{
+			TruepGameMap[i + 1][j + 1] = pGameMap[i][j];
+		}
+	}
 	//how many
-	return pGameMap;
+	return TruepGameMap;
 }
 
 
@@ -155,67 +189,17 @@ bool CGameLogic::OneCornerLink(int** pGameMap, Vertex v1, Vertex v2)
 
 bool CGameLogic::TwoCornerLinkBasedOnX(int** pGameMap, Vertex v1, Vertex v2)
 {
-	if (v1.nRow == 0 && v2.nRow != 0)
+	for (int i = 0;i <= 11;i++)
 	{
-		if (pGameMap[0][v2.nCol] == BLANK&&LinkInCol(pGameMap, v2, { 0,v2.nCol }))
+		if (i == v1.nRow || i == v2.nRow) continue;
+		if (pGameMap[i][v1.nCol] == BLANK&&pGameMap[i][v2.nCol] == BLANK)
 		{
-			return true;
-		}
-	}
-	if (v2.nRow == 0 && v1.nRow != 0)
-	{
-		if (pGameMap[0][v1.nCol] == BLANK&&LinkInCol(pGameMap, v1, { 0,v1.nCol }))
-		{
-			return true;
-		}
-	}
-	if (v1.nRow == 9 && v2.nRow != 9)
-	{
-		if (pGameMap[9][v2.nCol] == BLANK&&LinkInCol(pGameMap, v2, { 9,v2.nCol }))
-		{
-			return true;
-		}
-	}
-	if (v2.nRow == 9 & v1.nRow != 9)
-	{
-		if (pGameMap[9][v1.nCol] == BLANK&&LinkInCol(pGameMap, v1, { 9,v1.nCol }))
-		{
-			return true;
-		}
-	}
-
-	if ((v1.nRow==0&&v2.nRow==0)||(v1.nRow==9&&v2.nRow==9))
-	{
-		return true;
-	}
-	else
-	{
-		for (int i = 0;i <= 9;i++)
-		{
-			if (i == v1.nRow || i == v2.nRow) continue;
-			if (pGameMap[i][v1.nCol] == BLANK && pGameMap[i][v2.nCol] == BLANK)
+			if (LinkInRow(pGameMap, { i,v1.nCol }, { i,v2.nCol }) &&
+				LinkInCol(pGameMap, v1, { i,v1.nCol }) &&
+				LinkInCol(pGameMap, v2, { i,v2.nCol }))
 			{
-				if (LinkInRow(pGameMap, { i,v1.nCol }, { i,v2.nCol })&&
-					LinkInCol(pGameMap, v1, { i,v1.nCol })&&
-					LinkInCol(pGameMap, v2, { i,v2.nCol }))
-				{
-					return true;
-				}
+				return true;
 			}
-		}
-		if (pGameMap[0][v1.nCol] == BLANK&&
-			pGameMap[0][v2.nCol] == BLANK&&
-			LinkInRow(pGameMap, v1, { 0,v1.nCol })&&
-			LinkInRow(pGameMap, v2, { 0,v2.nCol }))
-		{
-			return true;
-		}
-		if (pGameMap[9][v1.nCol] == BLANK&&
-			pGameMap[9][v2.nCol] == BLANK&&
-			LinkInRow(pGameMap, v1, { 9,v1.nCol }) &&
-			LinkInRow(pGameMap, v2, { 9,v2.nCol }))
-		{
-			return true;
 		}
 	}
 	return false;
@@ -223,70 +207,20 @@ bool CGameLogic::TwoCornerLinkBasedOnX(int** pGameMap, Vertex v1, Vertex v2)
 
 bool CGameLogic::TwoCornerLinkBasedOnY(int** pGameMap, Vertex v1, Vertex v2)
 {
-	if (v1.nCol == 0 && v2.nCol != 0)
+	for (int i = 0;i <= 17;i++)
 	{
-		if (pGameMap[v2.nRow][0] == BLANK&&LinkInRow(pGameMap, v2, { v2.nRow,0 }))
+		if (i == v1.nCol || i == v2.nCol) continue;
+		if (pGameMap[v1.nRow][i] == BLANK&&pGameMap[v2.nRow][i] == BLANK)
 		{
-			return true;
-		}
-	}
-	if (v2.nCol == 0 && v1.nCol != 0)
-	{
-		if (pGameMap[v1.nRow][0] == BLANK&&LinkInRow(pGameMap, v1, { v1.nRow,0 }))
-		{
-			return true;
-		}
-	}
-	if (v1.nCol == 15 && v2.nCol != 15)
-	{
-		if (pGameMap[v2.nRow][15] == BLANK&&LinkInRow(pGameMap, v2, { v2.nRow,15 }))
-		{
-			return true;
-		}
-	}
-	if (v2.nRow == 15 & v1.nRow != 15)
-	{
-		if (pGameMap[v1.nRow][15] == BLANK&&LinkInRow(pGameMap, v1, { v1.nRow,15 }))
-		{
-			return true;
-		}
-	}
-	
-	if ((v1.nCol == 0 && v2.nCol == 0) || (v1.nCol == 15 && v2.nCol == 15))
-	{
-		return true;
-	}
-	/*else
-	{
-		for (int i = 0;i <= 9;i++)
-		{
-			if (i == v1.nRow || i == v2.nRow) continue;
-			if (pGameMap[i][v1.nCol] == BLANK && pGameMap[i][v2.nCol] == BLANK)
+			if (LinkInCol(pGameMap, { v1.nRow,i }, { v2.nRow,i }) &&
+				LinkInRow(pGameMap, v1, { v1.nRow,i }) &&
+				LinkInRow(pGameMap, v2, { v2.nRow,i }))
 			{
-				if (LinkInRow(pGameMap, { i,v1.nCol }, { i,v2.nCol }) &&
-					LinkInCol(pGameMap, v1, { i,v1.nCol }) &&
-					LinkInCol(pGameMap, v2, { i,v2.nCol }))
-				{
-					return true;
-				}
+				return true;
 			}
 		}
-		if (pGameMap[0][v1.nCol] == BLANK&&
-			pGameMap[0][v2.nCol] == BLANK&&
-			LinkInRow(pGameMap, v1, { 0,v1.nCol }) &&
-			LinkInRow(pGameMap, v2, { 0,v2.nCol }))
-		{
-			return true;
-		}
-		if (pGameMap[9][v1.nCol] == BLANK&&
-			pGameMap[9][v2.nCol] == BLANK&&
-			LinkInRow(pGameMap, v1, { 9,v1.nCol }) &&
-			LinkInRow(pGameMap, v2, { 9,v2.nCol }))
-		{
-			return true;
-		}
 	}
-	return false;*/
+	return false;
 }
 
 bool CGameLogic::IsLink(int** pGameMap, Vertex v1, Vertex v2)

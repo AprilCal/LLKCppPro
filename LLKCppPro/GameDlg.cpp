@@ -158,7 +158,7 @@ void CGameDlg::UpdateMap()
 		for (int j = 0;j < CGameControl::s_nCols;j++)
 		{
 			//get picture num
-			int nElemVal = gamecontrol.GetElement(i, j);
+			int nElemVal = gamecontrol.GetElement(i+1, j+1);
 			//m_dcMem.SelectObject();
 			//||
 			m_dcMem.BitBlt(nLeft + j*nElemW, nTop + i*nElemH, nElemW, nElemH, &m_dcMask, 0, nElemVal*nElemH,SRCPAINT);
@@ -184,7 +184,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		int row = (point.y - nTop) / nElemW;
 		int col = (point.x - nLeft) / nElemH;
-		if (gamecontrol.m_pGameMap[row][col] != BLANK)
+		if (gamecontrol.m_pGameMap[row+1][col+1] != BLANK)
 		{
 			CClientDC dc(this);
 			CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
@@ -193,17 +193,17 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 			dc.Rectangle(nLeft + nElemW*col, nTop + nElemH*row, nLeft + nElemW*col + 40, nTop + nElemH*row + 40);//画一个矩形
 		}
 
-		if ((gamecontrol.m_pGameMap[(point.y - nTop) / nElemW][(point.x - nLeft) / nElemH] != BLANK))
+		if ((gamecontrol.m_pGameMap[(point.y - nTop) / nElemW+1][(point.x - nLeft) / nElemH+1] != BLANK))
 		{
-			if (m_bFirstPoint.nRow == 11)//一共10行，不会用到11
+			if (m_bFirstPoint.nRow == 12)//一共10行，不会用到11
 			{
-				m_bFirstPoint.nRow = (point.y - nTop) / nElemW;
-				m_bFirstPoint.nCol = (point.x - nLeft) / nElemH;
+				m_bFirstPoint.nRow = (point.y - nTop) / nElemW+1;
+				m_bFirstPoint.nCol = (point.x - nLeft) / nElemH+1;
 			}
 			else
 			{
-				m_bSecPoint.nRow = (point.y - nTop) / nElemW;
-				m_bSecPoint.nCol = (point.x - nLeft) / nElemH;
+				m_bSecPoint.nRow = (point.y - nTop) / nElemW+1;
+				m_bSecPoint.nCol = (point.x - nLeft) / nElemH+1;
 				if (m_bFirstPoint.nRow == m_bSecPoint.nRow&&
 					m_bFirstPoint.nCol == m_bSecPoint.nCol)
 				{
@@ -211,7 +211,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 					CClientDC dc(this);
 					UpdateMap();
 					dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
-					m_bFirstPoint.nRow = 11;
+					m_bFirstPoint.nRow = 12;
 				}
 				else
 				{
@@ -222,22 +222,22 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 						CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
 						dc.SelectObject(&penRect);//将pen放到dc上
 						dc.SelectStockObject(NULL_BRUSH);
-						dc.MoveTo(m_bFirstPoint.nCol * 40 + 20 + 20, m_bFirstPoint.nRow * 40 + 50 + 20);
-						dc.LineTo(m_bSecPoint.nCol * 40 + 20 + 20, m_bSecPoint.nRow * 40 + 50 + 20);
+						dc.MoveTo((m_bFirstPoint.nCol-1) * 40 + 20 + 20, (m_bFirstPoint.nRow-1) * 40 + 50 + 20);
+						dc.LineTo((m_bSecPoint.nCol-1) * 40 + 20 + 20, (m_bSecPoint.nRow-1) * 40 + 50 + 20);
 						for (int i = 0;i < 60000000;i++) {  }
 						gamecontrol.PushVex(m_bFirstPoint);
 						gamecontrol.PushVex(m_bSecPoint);
 						//CClientDC dc(this);
 						UpdateMap();
 						dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
-						m_bFirstPoint.nRow = 11;
+						m_bFirstPoint.nRow = 12;
 					}
 					else
 					{
 						CClientDC dc(this);
 						UpdateMap();
 						dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
-						m_bFirstPoint.nRow = 11;
+						m_bFirstPoint.nRow = 12;
 					}//else
 				}//else
 			}//else
