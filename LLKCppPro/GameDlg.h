@@ -41,6 +41,7 @@ protected:
 	void InitElement();
 	void UpdateMap();
 	void InitDC();
+	void DrawLine(Path *path);
 	CDC m_dcMem;
 	CDC m_dcElement;
 	CDC m_dcMask;
@@ -51,6 +52,9 @@ protected:
 	int nElemH = 40;
 	int RowElementNum = 10;
 	int ColElementNum = 16;
+	int TruenLeft = -20;
+	int TruenTop = 10;
+	int count = 0;
 
 	CRect m_rtGameRect;
 

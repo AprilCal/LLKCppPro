@@ -7,3 +7,9 @@ struct Vertex
 	int nRow;
 	int nCol;
 };
+
+struct Path
+{
+	Vertex v;
+	Path* next;
+};

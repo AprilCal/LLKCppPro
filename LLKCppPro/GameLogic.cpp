@@ -124,6 +124,7 @@ int** CGameLogic::InitMap()
 
 bool CGameLogic::LinkInRow(int** pGameMap, Vertex v1, Vertex v2)
 {
+	
 	if (v1.nRow != v2.nRow)
 	{
 		return false;
@@ -131,10 +132,6 @@ bool CGameLogic::LinkInRow(int** pGameMap, Vertex v1, Vertex v2)
 	int left = v1.nCol < v2.nCol ? v1.nCol : v2.nCol;
 	int right = v1.nCol > v2.nCol ? v1.nCol : v2.nCol;
 	int nRow = v1.nRow;
-	//if (left + 1 == right)//如果相邻
-	//{
-	//	return true;
-	//}
 	left++;
 	for (;left <= right;left++)//不相邻
 	{
@@ -153,10 +150,6 @@ bool CGameLogic::LinkInCol(int** pGameMap, Vertex v1, Vertex v2)
 	int top = v1.nRow < v2.nRow ? v1.nRow : v2.nRow;
 	int bottom = v1.nRow > v2.nRow ? v1.nRow : v2.nRow;
 	int nCol = v1.nCol;
-	/*if (top + 1 == bottom)
-	{
-		return true;
-	}*/
 	top++;
 	for (;top <= bottom;top++)
 	{
@@ -166,7 +159,7 @@ bool CGameLogic::LinkInCol(int** pGameMap, Vertex v1, Vertex v2)
 	return false;
 }
 
-bool CGameLogic::OneCornerLink(int** pGameMap, Vertex v1, Vertex v2)
+bool CGameLogic::OneCornerLink(Path* path,int** pGameMap, Vertex v1, Vertex v2)
 {
 	if (v1.nCol == v2.nCol || v1.nRow == v2.nRow)
 	{
@@ -175,20 +168,39 @@ bool CGameLogic::OneCornerLink(int** pGameMap, Vertex v1, Vertex v2)
 	if (pGameMap[v1.nRow][v2.nCol] == BLANK)
 	{
 		if (LinkInRow(pGameMap, v1, { v1.nRow,v2.nCol }) && LinkInCol(pGameMap, v2, { v1.nRow,v2.nCol }))
+		{
+			path->v = v1;
+			path->next = new Path();
+			path = path->next;
+			path->v = { v1.nRow,v2.nCol };
+			path->next = new Path();
+			path = path->next;
+			path->v = v2;
+			path->next = NULL;
 			return true;
+		}
 	}
 	if(pGameMap[v2.nRow][v1.nCol] == BLANK)
 	{
 		if (LinkInCol(pGameMap, v1, { v2.nRow,v1.nCol }) && LinkInRow(pGameMap, v2, { v2.nRow,v1.nCol }))
 		{
+			path->v = v1;
+			path->next = new Path();
+			path = path->next;
+			path->v = { v2.nRow,v1.nCol };
+			path->next = new Path();
+			path = path->next;
+			path->v = v2;
+			path->next = NULL;
 			return true;
 		}
 	}
 	return false;
 }
 
-bool CGameLogic::TwoCornerLinkBasedOnX(int** pGameMap, Vertex v1, Vertex v2)
+bool CGameLogic::TwoCornerLinkBasedOnX(Path* path,int** pGameMap, Vertex v1, Vertex v2)
 {
+	int length = INT32_MAX;
 	for (int i = 0;i <= 11;i++)
 	{
 		if (i == v1.nRow || i == v2.nRow) continue;
@@ -198,15 +210,35 @@ bool CGameLogic::TwoCornerLinkBasedOnX(int** pGameMap, Vertex v1, Vertex v2)
 				LinkInCol(pGameMap, v1, { i,v1.nCol }) &&
 				LinkInCol(pGameMap, v2, { i,v2.nCol }))
 			{
-				return true;
+				if (abs(v1.nRow - i) + abs(v2.nRow - i) < length)
+				{
+					length = abs(v1.nRow - i) + abs(v2.nRow - i);
+					Path* p = path;
+					p->v = v1;
+					p->next = new Path();
+					p = p->next;
+					p->v = { i,v1.nCol };
+					p->next = new Path();
+					p = p->next;
+					p->v = { i,v2.nCol };
+					p->next = new Path();
+					p = p->next;
+					p->v = v2;
+					p->next = NULL;
+				}
 			}
 		}
+	}
+	if (length < INT32_MAX)
+	{
+		return true;
 	}
 	return false;
 }
 
-bool CGameLogic::TwoCornerLinkBasedOnY(int** pGameMap, Vertex v1, Vertex v2)
+bool CGameLogic::TwoCornerLinkBasedOnY(Path* path, int** pGameMap, Vertex v1, Vertex v2)
 {
+	int length = INT32_MAX;
 	for (int i = 0;i <= 17;i++)
 	{
 		if (i == v1.nCol || i == v2.nCol) continue;
@@ -216,20 +248,55 @@ bool CGameLogic::TwoCornerLinkBasedOnY(int** pGameMap, Vertex v1, Vertex v2)
 				LinkInRow(pGameMap, v1, { v1.nRow,i }) &&
 				LinkInRow(pGameMap, v2, { v2.nRow,i }))
 			{
-				return true;
+				if (abs(v1.nRow - i) + abs(v2.nRow - i) < length)
+				{
+					length = abs(v1.nCol - i) + abs(v2.nCol - i);
+					Path* p = path;
+					p->v = v1;
+					p->next = new Path();
+					p = p->next;
+					p->v = { v1.nRow,i };
+					p->next = new Path();
+					p = p->next;
+					p->v = { v2.nRow,i };
+					p->next = new Path();
+					p = p->next;
+					p->v = v2;
+					p->next = NULL;
+				}
 			}
 		}
+	}
+	if (length < INT32_MAX)
+	{
+		return true;
 	}
 	return false;
 }
 
-bool CGameLogic::IsLink(int** pGameMap, Vertex v1, Vertex v2)
+bool CGameLogic::IsLink(Path* path,int** pGameMap, Vertex v1, Vertex v2)
 {
-	return LinkInRow(pGameMap, v1, v2)|| 
-		   LinkInCol(pGameMap, v1, v2)|| 
-		   OneCornerLink(pGameMap, v1, v2)||
-		   TwoCornerLinkBasedOnX(pGameMap, v1, v2)||
-	       TwoCornerLinkBasedOnY(pGameMap, v1, v2);
+	if (LinkInRow(pGameMap, v1, v2))
+	{
+		path->v = v1;
+		path->next = new Path();
+		path = path->next;
+		path->v = v2;
+		path->next = NULL;
+		return true;
+	}
+	if (LinkInCol(pGameMap, v1, v2))
+	{
+		path->v = v1;
+		path->next = new Path();
+		path = path->next;
+		path->v = v2;
+		path->next = NULL;
+		return true;
+	}
+	return OneCornerLink(path,pGameMap, v1, v2)||
+		   TwoCornerLinkBasedOnX(path,pGameMap, v1, v2)||
+	       TwoCornerLinkBasedOnY(path,pGameMap, v1, v2);
 }
 
 bool CGameLogic::IsSame(int** pGameMap, Vertex v1, Vertex v2)

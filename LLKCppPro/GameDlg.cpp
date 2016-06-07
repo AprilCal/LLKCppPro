@@ -78,6 +78,7 @@ END_INTERFACE_MAP()
 
 BOOL CGameDlg::OnInitDialog()
 {
+	count = 0;
 	gamecontrol.m_pGameMap = gamelogic.InitMap();
 	InitDC();
 	//InitBackground();
@@ -100,7 +101,6 @@ void CGameDlg::InitBackground()
 	//if (!bitmap.Attach(hbitmap)) //将位图对象和用户定义类相联系
 	//	MessageBox("ATTACH FAIL!");//如果Attach调用失败弹出信息框提示
 	CBitmap bmpMain;
-	//bmpMain.LoadBitmapW(IDB_BITMAP1);
 	HBITMAP hbitmap =(HBITMAP)::LoadImage(NULL, _T("theme\\picture\\background.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	bmpMain.Attach(hbitmap);
 	m_dcMem.SelectObject(bmpMain);
@@ -152,14 +152,12 @@ void CGameDlg::InitElement()
 void CGameDlg::UpdateMap()
 {
 	InitBackground();
-	//gamecontrol.m_pGameMap = gamelogic.InitMap();
 	for (int i = 0;i < CGameControl::s_nRows;i++)
 	{
 		for (int j = 0;j < CGameControl::s_nCols;j++)
 		{
 			//get picture num
 			int nElemVal = gamecontrol.GetElement(i+1, j+1);
-			//m_dcMem.SelectObject();
 			//||
 			m_dcMem.BitBlt(nLeft + j*nElemW, nTop + i*nElemH, nElemW, nElemH, &m_dcMask, 0, nElemVal*nElemH,SRCPAINT);
 			//&&
@@ -175,6 +173,9 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	m_rtGameRect.left = nLeft;
 	m_rtGameRect.right = nLeft + nElemW*ColElementNum;
 
+	int row = (point.y - TruenTop) / nElemH;
+	int col = (point.x - TruenLeft) / nElemW;
+
 	if (point.y<m_rtGameRect.top || point.y>m_rtGameRect.bottom
 		|| point.x <m_rtGameRect.left || point.x >m_rtGameRect.right)
 	{
@@ -182,30 +183,27 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	else
 	{
-		int row = (point.y - nTop) / nElemW;
-		int col = (point.x - nLeft) / nElemH;
-		if (gamecontrol.m_pGameMap[row+1][col+1] != BLANK)
+		if (gamecontrol.m_pGameMap[row][col] != BLANK)
 		{
 			CClientDC dc(this);
 			CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
-			dc.SelectObject(&penRect);//将pen放到dc上
+			dc.SelectObject(&penRect);
 			dc.SelectStockObject(NULL_BRUSH);
-			dc.Rectangle(nLeft + nElemW*col, nTop + nElemH*row, nLeft + nElemW*col + 40, nTop + nElemH*row + 40);//画一个矩形
+			dc.Rectangle(TruenLeft + nElemW*col, TruenTop + nElemH*row, TruenLeft + nElemW*col + 40, TruenTop + nElemH*row + 40);
 		}
-
-		if ((gamecontrol.m_pGameMap[(point.y - nTop) / nElemW+1][(point.x - nLeft) / nElemH+1] != BLANK))
+		if ((gamecontrol.m_pGameMap[row][col] != BLANK))
 		{
-			if (m_bFirstPoint.nRow == 12)//一共10行，不会用到11
+			if (m_bFirstPoint.nRow == 12)//一共12行,0-11，不会用到12
 			{
-				m_bFirstPoint.nRow = (point.y - nTop) / nElemW+1;
-				m_bFirstPoint.nCol = (point.x - nLeft) / nElemH+1;
+				m_bFirstPoint.nRow = row;
+				m_bFirstPoint.nCol = col;
 			}
 			else
 			{
-				m_bSecPoint.nRow = (point.y - nTop) / nElemW+1;
-				m_bSecPoint.nCol = (point.x - nLeft) / nElemH+1;
+				m_bSecPoint.nRow = row;
+				m_bSecPoint.nCol = col;
 				if (m_bFirstPoint.nRow == m_bSecPoint.nRow&&
-					m_bFirstPoint.nCol == m_bSecPoint.nCol)
+				m_bFirstPoint.nCol == m_bSecPoint.nCol)//若两次选中的点相同，则取消选择，即第二次点击一个点取消选择
 				{
 					//do nothing except repaint dc
 					CClientDC dc(this);
@@ -215,24 +213,24 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 				}
 				else
 				{
+					Path *path=new Path();
 					if (gamelogic.IsSame(gamecontrol.m_pGameMap, m_bFirstPoint, m_bSecPoint) &&
-						gamelogic.IsLink(gamecontrol.m_pGameMap, m_bFirstPoint, m_bSecPoint))
+					gamelogic.IsLink(path,gamecontrol.m_pGameMap, m_bFirstPoint, m_bSecPoint))
 					{
 						CClientDC dc(this);
 						CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
 						dc.SelectObject(&penRect);//将pen放到dc上
 						dc.SelectStockObject(NULL_BRUSH);
-						dc.MoveTo((m_bFirstPoint.nCol-1) * 40 + 20 + 20, (m_bFirstPoint.nRow-1) * 40 + 50 + 20);
-						dc.LineTo((m_bSecPoint.nCol-1) * 40 + 20 + 20, (m_bSecPoint.nRow-1) * 40 + 50 + 20);
-						for (int i = 0;i < 60000000;i++) {  }
+						DrawLine(path);
+						Sleep(100);
 						gamecontrol.PushVex(m_bFirstPoint);
 						gamecontrol.PushVex(m_bSecPoint);
-						//CClientDC dc(this);
+						count += 2;
 						UpdateMap();
-						dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+						dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft+22, RowElementNum*nElemH + nTop+22, &m_dcMem, 0, 0, SRCCOPY);
 						m_bFirstPoint.nRow = 12;
 					}
-					else
+					else//如果选择的点不连通或不相同，则取消选择
 					{
 						CClientDC dc(this);
 						UpdateMap();
@@ -241,7 +239,11 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 					}//else
 				}//else
 			}//else
-		}//if
+		}
+	}
+	if (count >= RowElementNum*ColElementNum)
+	{
+		AfxMessageBox(_T("You Win"));
 	}
 }
 
@@ -270,4 +272,19 @@ void CGameDlg::OnBnClickedCancel()
 {
 	//CDialog::OnCancel();
 	CDialogEx::OnCancel();
+}
+
+void CGameDlg::DrawLine(Path *path)
+{
+	CClientDC dc(this);
+	CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
+	dc.SelectObject(&penRect);//将pen放到dc上
+	dc.SelectStockObject(NULL_BRUSH);
+	while (path != NULL && path->next != NULL)
+	{
+		dc.MoveTo(path->v.nCol * 40 + TruenLeft + nElemW/2, path->v.nRow * 40 + TruenTop + nElemH/2);
+		path = path->next;
+		dc.LineTo(path->v.nCol * 40 + TruenLeft + nElemW/2, path->v.nRow * 40 + TruenTop + nElemH/2);
+		dc.MoveTo(path->v.nCol * 40 + TruenLeft + nElemW/2, path->v.nRow * 40 + TruenTop + nElemH/2);
+	}
 }
