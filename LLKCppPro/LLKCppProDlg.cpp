@@ -72,6 +72,7 @@ BEGIN_MESSAGE_MAP(CLLKCppProDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &CLLKCppProDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDCANCEL, &CLLKCppProDlg::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
 
@@ -187,4 +188,11 @@ void CLLKCppProDlg::OnBnClickedOk()
 	CGameDlg dlg;
 	dlg.DoModal();
 	ShowWindow(SW_SHOW);
+}
+
+
+void CLLKCppProDlg::OnBnClickedCancel()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CDialogEx::OnCancel();
 }

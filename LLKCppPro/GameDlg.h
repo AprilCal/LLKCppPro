@@ -42,6 +42,7 @@ protected:
 	void UpdateMap();
 	void InitDC();
 	void DrawLine(Path *path);
+	void FreePath(Path *path);
 	CDC m_dcMem;
 	CDC m_dcElement;
 	CDC m_dcMask;
@@ -71,4 +72,5 @@ public:
 	afx_msg void OnBnClickedButton4();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
+	afx_msg void OnBnClickedButton3();
 };

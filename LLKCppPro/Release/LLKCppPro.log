@@ -1,6 +1,8 @@
 ﻿  GameDlg.cpp
+GameDlg.cpp(328): warning C4101: “i”: 未引用的局部变量
+  GameLogic.cpp
   正在生成代码
-  1 of 251 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
+  9 of 255 functions ( 3.5%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     1 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成

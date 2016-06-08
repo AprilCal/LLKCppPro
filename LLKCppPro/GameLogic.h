@@ -15,6 +15,8 @@ public:
 	bool OneCornerLink(Path* path,int** pGameMap, Vertex v1, Vertex v2);
 	bool TwoCornerLinkBasedOnX(Path* path,int** pGameMap, Vertex v1, Vertex v2);
 	bool TwoCornerLinkBasedOnY(Path* path, int** pGameMap, Vertex v1, Vertex v2);
+	
+	void FreePathList(Path *path);
 private:
 	int nRows;
 	int nCols;

@@ -55,6 +55,7 @@ BEGIN_MESSAGE_MAP(CGameDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON4, &CGameDlg::OnBnClickedButton4)
 	ON_BN_CLICKED(IDOK, &CGameDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CGameDlg::OnBnClickedCancel)
+	ON_BN_CLICKED(IDC_BUTTON3, &CGameDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 BEGIN_DISPATCH_MAP(CGameDlg, CDialogEx)
@@ -214,6 +215,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 				else
 				{
 					Path *path=new Path();
+					path->next = NULL;
 					if (gamelogic.IsSame(gamecontrol.m_pGameMap, m_bFirstPoint, m_bSecPoint) &&
 					gamelogic.IsLink(path,gamecontrol.m_pGameMap, m_bFirstPoint, m_bSecPoint))
 					{
@@ -222,6 +224,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 						dc.SelectObject(&penRect);//将pen放到dc上
 						dc.SelectStockObject(NULL_BRUSH);
 						DrawLine(path);
+						//for (int i = 0;i < 60000000;i++);
 						Sleep(100);
 						gamecontrol.PushVex(m_bFirstPoint);
 						gamecontrol.PushVex(m_bSecPoint);
@@ -229,6 +232,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 						UpdateMap();
 						dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft+22, RowElementNum*nElemH + nTop+22, &m_dcMem, 0, 0, SRCCOPY);
 						m_bFirstPoint.nRow = 12;
+						FreePath(path);
 					}
 					else//如果选择的点不连通或不相同，则取消选择
 					{
@@ -286,5 +290,53 @@ void CGameDlg::DrawLine(Path *path)
 		path = path->next;
 		dc.LineTo(path->v.nCol * 40 + TruenLeft + nElemW/2, path->v.nRow * 40 + TruenTop + nElemH/2);
 		dc.MoveTo(path->v.nCol * 40 + TruenLeft + nElemW/2, path->v.nRow * 40 + TruenTop + nElemH/2);
+	}
+}
+
+
+void CGameDlg::OnBnClickedButton3()
+{
+	Path *path = new Path();
+	for (int i = 1;i < RowElementNum + 1;i++)
+	{
+		for (int j = 1;j < ColElementNum + 1;j++)
+		{
+			if (gamecontrol.m_pGameMap[i][j] != BLANK)
+			{
+				for (int m = 1;m < RowElementNum;m++)
+				{
+					for (int n = 1;n < ColElementNum;n++)
+					{
+						if (i == m&&j == n)
+						{
+							continue;
+						}
+						else
+						{
+							if (gamelogic.IsSame(gamecontrol.m_pGameMap, { i,j }, { m,n }) &&
+								gamelogic.IsLink(path, gamecontrol.m_pGameMap, { i,j }, { m,n }))
+							{
+								DrawLine(path);
+								goto loop;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	AfxMessageBox(_T("You Win"));
+	loop:int i;
+}
+
+
+void CGameDlg::FreePath(Path* path)
+{
+	Path *p = path;
+	while (p)
+	{
+		Path* next = p->next;
+		free(p);
+		p = next;
 	}
 }
