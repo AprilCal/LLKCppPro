@@ -3,3 +3,5 @@ LLKCppPro.VC.VC.opendb
 ipch/*
 Debug/*
 LLKCppPro/Debug/*
+LLKCppPro/Release/*
+Release/*
