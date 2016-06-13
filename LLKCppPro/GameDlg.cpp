@@ -325,7 +325,7 @@ void CGameDlg::OnBnClickedButton3()
 			}
 		}
 	}
-	AfxMessageBox(_T("You Win"));
+	AfxMessageBox(_T("无子可消"));
 	loop:int i;
 }
 

@@ -73,6 +73,7 @@ BEGIN_MESSAGE_MAP(CLLKCppProDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &CLLKCppProDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CLLKCppProDlg::OnBnClickedCancel)
+	ON_BN_CLICKED(IDC_BUTTON5, &CLLKCppProDlg::OnBnClickedButton5)
 END_MESSAGE_MAP()
 
 
@@ -195,4 +196,10 @@ void CLLKCppProDlg::OnBnClickedCancel()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CDialogEx::OnCancel();
+}
+
+
+void CLLKCppProDlg::OnBnClickedButton5()
+{
+	// TODO: 在此添加控件通知处理程序代码
 }
