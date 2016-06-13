@@ -79,13 +79,13 @@ END_INTERFACE_MAP()
 
 BOOL CGameDlg::OnInitDialog()
 {
-	count = 0;
-	gamecontrol.m_pGameMap = gamelogic.InitMap();
+	//count = 0;
+	//gamecontrol.m_pGameMap = gamelogic.InitMap();
 	InitDC();
-	//InitBackground();
+	InitBackground();
 	UpdateWindow();
-	InitElement();
-	UpdateMap();
+	//InitElement();
+	//UpdateMap();
 	
 	CDialogEx::OnInitDialog();
 
@@ -254,7 +254,14 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CGameDlg::OnBnClickedButton1()
 {
-
+	CClientDC dc(this);
+	count = 0;
+	gamecontrol.m_pGameMap = gamelogic.InitMap();
+	//InitBackground();
+	UpdateWindow();
+	InitElement();
+	UpdateMap();
+	dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
 }
 
 
