@@ -186,9 +186,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameControl.h" />
+    <ClInclude Include="GameControl_G.h" />
     <ClInclude Include="GameDlg.h" />
+    <ClInclude Include="GameDlg_G.h" />
     <ClInclude Include="GameLogic.h" />
+    <ClInclude Include="GameLogic_G.h" />
     <ClInclude Include="global.h" />
+    <ClInclude Include="Graph.h" />
     <ClInclude Include="LLKCppPro.h" />
     <ClInclude Include="LLKCppProDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -197,8 +201,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameControl.cpp" />
+    <ClCompile Include="GameControl_G.cpp" />
     <ClCompile Include="GameDlg.cpp" />
+    <ClCompile Include="GameDlg_G.cpp" />
     <ClCompile Include="GameLogic.cpp" />
+    <ClCompile Include="GameLogic_G.cpp" />
+    <ClCompile Include="Graph.cpp" />
     <ClCompile Include="LLKCppPro.cpp" />
     <ClCompile Include="LLKCppProDlg.cpp" />
     <ClCompile Include="stdafx.cpp">

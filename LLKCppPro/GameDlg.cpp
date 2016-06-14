@@ -88,8 +88,6 @@ BOOL CGameDlg::OnInitDialog()
 	//UpdateMap();
 	
 	CDialogEx::OnInitDialog();
-
-	// TODO:  在此添加额外的初始化
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	SetIcon(m_hIcon, FALSE);
 
@@ -141,8 +139,6 @@ void  CGameDlg::UpdateWindow()
 
 void CGameDlg::InitElement()
 {
-	CClientDC dc(this);
-
 	HANDLE hMask=::LoadImageW(NULL, _T("theme\\picture\\Elements-mask.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	m_dcMask.SelectObject(hMask);
 
@@ -180,6 +176,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	if (point.y<m_rtGameRect.top || point.y>m_rtGameRect.bottom
 		|| point.x <m_rtGameRect.left || point.x >m_rtGameRect.right)
 	{
+		//do nothing
 		//return CDialogEx::OnLButtonUp(nFlags, point);
 	}
 	else
@@ -224,7 +221,6 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 						dc.SelectObject(&penRect);//将pen放到dc上
 						dc.SelectStockObject(NULL_BRUSH);
 						DrawLine(path);
-						//for (int i = 0;i < 60000000;i++);
 						Sleep(100);
 						gamecontrol.PushVex(m_bFirstPoint);
 						gamecontrol.PushVex(m_bSecPoint);
@@ -248,6 +244,11 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	if (count >= RowElementNum*ColElementNum)
 	{
 		AfxMessageBox(_T("You Win"));
+		CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON1); //IDC_BUTTON2这个按钮 
+		if (pBtn != NULL)
+		{
+			pBtn->EnableWindow(TRUE); // True or False 
+		}
 	}
 }
 
@@ -262,13 +263,17 @@ void CGameDlg::OnBnClickedButton1()
 	InitElement();
 	UpdateMap();
 	dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+	CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON1); //IDC_BUTTON2这个按钮 
+	if (pBtn != NULL)
+	{
+		pBtn->EnableWindow(FALSE); // True or False 
+	}
 }
 
 
 void CGameDlg::OnBnClickedButton4()
 {
 	gamecontrol.ResetMap();
-	//gamecontrol.m_pGameMap = gamelogic.InitMap();
 	CClientDC dc(this); 
 	UpdateMap();
 	dc.BitBlt( 0, 0, ColElementNum*nElemW+nLeft, RowElementNum*nElemH+nTop, &m_dcMem, 0, 0, SRCCOPY);
@@ -281,7 +286,6 @@ void CGameDlg::OnBnClickedOk()
 
 void CGameDlg::OnBnClickedCancel()
 {
-	//CDialog::OnCancel();
 	CDialogEx::OnCancel();
 }
 
@@ -335,7 +339,6 @@ void CGameDlg::OnBnClickedButton3()
 	AfxMessageBox(_T("无子可消"));
 	loop:int i;
 }
-
 
 void CGameDlg::FreePath(Path* path)
 {

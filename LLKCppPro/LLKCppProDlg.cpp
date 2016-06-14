@@ -8,6 +8,7 @@
 #include "LLKCppProDlg.h"
 #include "afxdialogex.h"
 #include "GameDlg.h"
+#include "GameDlg_G.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -201,5 +202,9 @@ void CLLKCppProDlg::OnBnClickedCancel()
 
 void CLLKCppProDlg::OnBnClickedButton5()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	//ShowWindow(SW_HIDE);
+	//// TODO: 在此添加控件通知处理程序代码
+	//CGameDlg_G dlg;
+	//dlg.DoModal();
+	//ShowWindow(SW_SHOW);
 }

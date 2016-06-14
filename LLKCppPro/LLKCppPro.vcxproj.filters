@@ -45,6 +45,18 @@
     <ClInclude Include="global.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GameDlg_G.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GameLogic_G.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Graph.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GameControl_G.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LLKCppPro.cpp">
@@ -63,6 +75,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="GameLogic.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GameDlg_G.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GameLogic_G.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Graph.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GameControl_G.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
