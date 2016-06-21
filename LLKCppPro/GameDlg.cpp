@@ -8,6 +8,8 @@
 #include "GameLogic.h"
 #include "GameControl.h"
 #include "global.h"
+#include <sstream>
+using namespace std;
 
 /*************************************************
 Copyright:AprilCal
@@ -45,6 +47,12 @@ void CGameDlg::OnFinalRelease()
 void CGameDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	//  DDX_Control(pDX, IDC_PROGRESS1, m_ctrlProgress);
+	//  DDX_Control(pDX, IDC_PROGRESS1, m_ctrlProgress);
+	DDX_Control(pDX, IDC_PROGRESS1, m_ctrlProgress);
+	//  DDX_Control(pDX, IDC_EDIT1, m_Label);
+	//  DDX_Control(pDX, IDCANCEL, m_Label);
+	//  DDX_Control(pDX, IDC_EDIT2, m_Time);
 }
 
 
@@ -56,6 +64,9 @@ BEGIN_MESSAGE_MAP(CGameDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CGameDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CGameDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_BUTTON3, &CGameDlg::OnBnClickedButton3)
+	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON_Pause, &CGameDlg::OnBnClickedButtonPause)
+	ON_BN_CLICKED(IDC_BUTTON_PROMPT, &CGameDlg::OnBnClickedButtonPrompt)
 END_MESSAGE_MAP()
 
 BEGIN_DISPATCH_MAP(CGameDlg, CDialogEx)
@@ -79,13 +90,20 @@ END_INTERFACE_MAP()
 
 BOOL CGameDlg::OnInitDialog()
 {
-	//count = 0;
-	//gamecontrol.m_pGameMap = gamelogic.InitMap();
 	InitDC();
 	InitBackground();
 	UpdateWindow();
-	//InitElement();
-	//UpdateMap();
+
+	//设置进度条的范围
+	time = 10;
+	UpdateData(false);
+	m_ctrlProgress.SetRange(0, 10);
+
+	//设置进度条的每一步的增量
+	m_ctrlProgress.SetStep(1);
+
+	//设置进度条的当前位置
+	m_ctrlProgress.SetPos(10);
 	
 	CDialogEx::OnInitDialog();
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -104,7 +122,6 @@ void CGameDlg::InitBackground()
 	bmpMain.Attach(hbitmap);
 	m_dcMem.SelectObject(bmpMain);
 }
-
 
 void CGameDlg::OnPaint()
 {
@@ -241,7 +258,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 			}//else
 		}
 	}
-	if (count >= RowElementNum*ColElementNum)
+	if (count >= RowElementNum*ColElementNum && time>=0)
 	{
 		AfxMessageBox(_T("You Win"));
 		CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON1); //IDC_BUTTON2这个按钮 
@@ -268,6 +285,13 @@ void CGameDlg::OnBnClickedButton1()
 	{
 		pBtn->EnableWindow(FALSE); // True or False 
 	}
+
+	CString tmpStr;
+	GetDlgItemText(IDC_PROGRESS1, tmpStr);
+	count = _wtoi(tmpStr);//将宽字符转换成整型
+	//SetTimer(1, 1000, NULL);//此为一个定时器
+	SetTimer(PLAY_TIMER_ID, 1000, NULL);
+	UpdateData(FALSE);
 }
 
 
@@ -277,6 +301,10 @@ void CGameDlg::OnBnClickedButton4()
 	CClientDC dc(this); 
 	UpdateMap();
 	dc.BitBlt( 0, 0, ColElementNum*nElemW+nLeft, RowElementNum*nElemH+nTop, &m_dcMem, 0, 0, SRCCOPY);
+	if (count >= 160)
+	{
+		AfxMessageBox(_T("请重新开始"));
+	}
 }
 
 void CGameDlg::OnBnClickedOk()
@@ -349,4 +377,140 @@ void CGameDlg::FreePath(Path* path)
 		free(p);
 		p = next;
 	}
+}
+
+void CGameDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	JudgeWin();
+	if (nIDEvent == PLAY_TIMER_ID && m_bPlaying && !m_bPaused)
+	{
+		if (time > 0)
+		{
+			//time--;
+		}
+		m_ctrlProgress.SetPos(time);
+		DrawTime();
+		/*if (time == 0)
+		{
+			AfxMessageBox(_T("时间到!!!"));
+		}*/
+	}
+	
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+void CGameDlg::DrawTime()
+{
+	//创建CPaintDC对象
+	CClientDC dc(this);
+
+	//创建字体
+	CFont font;
+	font.CreatePointFont(150, _T("Courier New"));
+
+	//将字体选进DC
+	CFont *oldFont;
+	oldFont = dc.SelectObject(&font);
+
+	//设置字体颜色和背景
+	dc.SetTextColor(RGB(22, 22, 2));
+	dc.SetBkColor(RGB(228, 221, 222));
+
+	//获取进度条组件位置
+	CRect rect;
+	GetDlgItem(IDC_PROGRESS1)->GetWindowRect(&rect);
+	ScreenToClient(rect);
+
+	//设置输出内容为进度
+	CString time;
+	time.Format(_T("%3d"), m_ctrlProgress.GetPos());
+
+	//设置输出位置为进度条旁
+	dc.TextOut(rect.left + rect.Width(), rect.top, time);
+
+	//用空格控制保证每次输出文本长度一致
+	if (m_ctrlProgress.GetPos() >= 10 && m_ctrlProgress.GetPos() < 100)
+	{
+		CString time;
+		time.Format(_T("%-3d "), m_ctrlProgress.GetPos());
+		dc.TextOut(rect.left + rect.Width(), rect.top, time);
+	}
+	if (m_ctrlProgress.GetPos() <10)
+	{
+		CString time;
+		time.Format(_T("%-3d "), m_ctrlProgress.GetPos());
+		dc.TextOut(rect.left + rect.Width(), rect.top, time);
+	}
+}
+
+
+void CGameDlg::JudgeWin()
+{
+	//游戏胜负判断
+	BOOL bGameStatus = gamecontrol.IsWin(m_ctrlProgress.GetPos());
+	//判断是否继续游戏
+	if (bGameStatus == GAME_PLAY)
+	{
+		return;
+	}
+	else
+	{
+		//游戏标识改为false
+		m_bPlaying = false;
+		//关闭定时器
+		KillTimer(PLAY_TIMER_ID);
+		//AfxMessageBox(_T("KillTimer"));
+		//提示获胜
+		CString strTitle;
+		this->GetWindowTextW(strTitle);
+		if (bGameStatus == GAME_SUCCESS)
+		{
+			MessageBox(_T("恭喜您获胜！"), strTitle);
+		}
+		else if (bGameStatus == GAME_LOSE)
+		{
+			MessageBox(_T("很遗憾，时间到！"), strTitle);
+		}
+		//还原开始游戏按钮，使开始按钮可以点击
+		this->GetDlgItem(IDC_BUTTON1)->EnableWindow(TRUE);
+	}
+}
+
+void CGameDlg::OnBnClickedButtonPause()
+{
+	
+	//CClientDC dc(this);
+	//dc.BitBlt(30, 30, 700, 700, &m_dcPause, 30, 30, SRCCOPY);
+	if (m_bPlaying == false)
+	{
+		return;
+	}
+	if (m_bPaused == false)
+	{
+		//绘制暂停图
+		CClientDC dc(this);
+		InitBackground();
+		dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+		this->GetDlgItem(IDC_BUTTON_PROMPT)->EnableWindow(FALSE);
+		this->GetDlgItem(IDC_BUTTON_RESET)->EnableWindow(FALSE);
+		InvalidateRect(m_rtGameRect, FALSE);
+		this->GetDlgItem(IDC_BUTTON_Pause)->SetWindowTextW(_T("继续游戏"));
+	}
+	else
+	{
+		CClientDC dc(this);
+		UpdateMap();
+		dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+		this->GetDlgItem(IDC_BUTTON_PROMPT)->EnableWindow(TRUE);
+		this->GetDlgItem(IDC_BUTTON_RESET)->EnableWindow(TRUE);
+		InvalidateRect(m_rtGameRect, FALSE);
+		this->GetDlgItem(IDC_BUTTON_Pause)->SetWindowTextW(_T("暂停游戏"));
+	}
+	m_bPaused = !m_bPaused;
+}
+
+
+void CGameDlg::OnBnClickedButtonPrompt()
+{
+	// TODO: 在此添加控件通知处理程序代码
 }

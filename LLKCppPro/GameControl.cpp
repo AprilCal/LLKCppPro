@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameControl.h"
 #include "global.h"
+#include "GameLogic.h"
 
 
 CGameControl::CGameControl()
@@ -50,4 +51,20 @@ int** CGameControl::ResetMap()
 
 	//how many
 	return m_pGameMap;
+}
+
+BOOL CGameControl::IsWin(int nTime)
+{
+	CGameLogic logic;
+
+	//еп╤осно╥й╠╪Д
+	if (nTime <= 0)
+	{
+		return GAME_LOSE;
+	}
+	if (logic.IsBlank(m_pGameMap) == true)
+	{
+		return GAME_SUCCESS;
+	}
+	return GAME_PLAY;
 }

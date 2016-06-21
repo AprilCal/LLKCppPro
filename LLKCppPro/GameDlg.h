@@ -1,6 +1,8 @@
 #pragma once
 #include "GameControl.h"
 #include "GameLogic.h"
+#include "afxcmn.h"
+#include "afxwin.h"
 
 /*************************************************
 Copyright:AprilCal
@@ -43,6 +45,9 @@ protected:
 	void InitDC();
 	void DrawLine(Path *path);
 	void FreePath(Path *path);
+	void DrawTime();
+	void JudgeWin();
+
 	CDC m_dcMem;
 	CDC m_dcElement;
 	CDC m_dcMask;
@@ -56,11 +61,16 @@ protected:
 	int TruenLeft = -20;
 	int TruenTop = 10;
 	int count = 0;
+	int time = 0;
+	CFont font;
 
 	CRect m_rtGameRect;
 
 	CGameLogic gamelogic;
 	CGameControl gamecontrol;
+
+	bool m_bPlaying = true;
+	bool m_bPaused = false;
 
 	Vertex m_bFirstPoint = {11,0};
 	Vertex m_bSecPoint = {11,0};
@@ -73,4 +83,12 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClickedButton3();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+//	CProgressCtrl m_ctrlProgress;
+	CProgressCtrl m_ctrlProgress;
+//	CEdit m_Label;
+//	CStatic m_Label;
+//	CEdit m_Time;
+	afx_msg void OnBnClickedButtonPause();
+	afx_msg void OnBnClickedButtonPrompt();
 };

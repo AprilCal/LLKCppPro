@@ -323,3 +323,15 @@ void CGameLogic::FreePathList(Path *path)
 		}
 	}
 }
+
+bool CGameLogic::IsBlank(int **anMap)
+{
+	for (int i = 0;i < 10;i++)
+	{
+		for (int j = 0;j<16;j++)
+		{
+			if (anMap[i][j] != BLANK) return false;
+		}
+	}
+	return true;
+}

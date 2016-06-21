@@ -12,6 +12,7 @@ public:
 	int GetElement(int nRow, int nCol);
 	bool PushVex(Vertex V);
 	int** ResetMap();
+	BOOL IsWin(int nTime);
 
 	Vertex m_svSelFst;//first vex selected
 	Vertex m_svSelSec;//second vex selected

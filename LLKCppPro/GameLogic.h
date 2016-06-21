@@ -7,6 +7,7 @@ public:
 	~CGameLogic();
 	int** InitMap();
 	void ReleaseMap(int **&pGameMap);
+	bool IsBlank(int **anMap);
 
 	bool IsLink(Path* path,int** pGameMap, Vertex v1, Vertex v2);
 	bool LinkInRow(int** pGameMap, Vertex v1, Vertex v2);
