@@ -186,7 +186,6 @@ void CLLKCppProDlg::InitBackground()
 void CLLKCppProDlg::OnBnClickedOk()
 {
 	ShowWindow(SW_HIDE);
-	// TODO: 在此添加控件通知处理程序代码
 	CGameDlg dlg;
 	dlg.DoModal();
 	ShowWindow(SW_SHOW);
@@ -195,16 +194,14 @@ void CLLKCppProDlg::OnBnClickedOk()
 
 void CLLKCppProDlg::OnBnClickedCancel()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	CDialogEx::OnCancel();
 }
 
 
 void CLLKCppProDlg::OnBnClickedButton5()
 {
-	//ShowWindow(SW_HIDE);
-	//// TODO: 在此添加控件通知处理程序代码
-	//CGameDlg_G dlg;
-	//dlg.DoModal();
-	//ShowWindow(SW_SHOW);
+	ShowWindow(SW_HIDE);
+	CGameDlg_G dlg;
+	dlg.DoModal();
+	ShowWindow(SW_SHOW);
 }

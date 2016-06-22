@@ -1,6 +1,8 @@
 #pragma once
-#include "GameLogic_G.h"
-#include "GameControl_G.h"
+#include "GameControl.h"
+#include "GameLogic.h"
+#include "afxcmn.h"
+#include "afxwin.h"
 #include "global.h"
 
 // CGameDlg_G 对话框
@@ -18,13 +20,28 @@ public:
 	enum { IDD = IDD_GAME_DIALOG2 };
 #endif
 
+private:
+	int GAMEWND_WIDTH = 800;
+	int GAMEWND_HEIGHT = 600;
 protected:
+	HICON m_hIcon;
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
 	DECLARE_MESSAGE_MAP()
 
-	int GAMEWND_WIDTH = 800;
-	int GAMEWND_HEIGHT = 600;
+	void InitBackground();
+	void UpdateWindow();
+	void InitElement();
+	void UpdateMap();
+	void InitDC();
+	void DrawLine(Path *path);
+	void FreePath(Path *path);
+	void DrawTime();
+	void JudgeWin();
+
+	CDC m_dcMem;
+	CDC m_dcElement;
+	CDC m_dcMask;
 
 	int nLeft = 20;
 	int nTop = 50;
@@ -35,26 +52,22 @@ protected:
 	int TruenLeft = -20;
 	int TruenTop = 10;
 	int count = 0;
+	int time = 0;
+	CFont font;
 
 	CRect m_rtGameRect;
 
-	CDC m_dcMem;
-	CDC m_dcMask;
-	CDC m_dcElement;
+	CGameLogic gamelogic;
+	CGameControl gamecontrol;
 
-	CGameLogic_G gamelogic;
-	CGameControl_G gamecontrol;
+	bool m_bPlaying = true;
+	bool m_bPaused = false;
 
 	Vertex m_bFirstPoint = { 11,0 };
 	Vertex m_bSecPoint = { 11,0 };
-
-	void InitDC();
-	void InitBackground();
-	void UpdateWindow();
-	void InitElement();
-	void UpdateMap();
 public:
 	afx_msg void OnPaint();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnBnClickedButtonStartgame();
 };

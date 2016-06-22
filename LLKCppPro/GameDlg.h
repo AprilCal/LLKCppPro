@@ -69,7 +69,7 @@ protected:
 	CGameLogic gamelogic;
 	CGameControl gamecontrol;
 
-	bool m_bPlaying = true;
+	bool m_bPlaying = false;
 	bool m_bPaused = false;
 
 	Vertex m_bFirstPoint = {11,0};
@@ -84,11 +84,10 @@ public:
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClickedButton3();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-//	CProgressCtrl m_ctrlProgress;
+
 	CProgressCtrl m_ctrlProgress;
-//	CEdit m_Label;
-//	CStatic m_Label;
-//	CEdit m_Time;
+
 	afx_msg void OnBnClickedButtonPause();
 	afx_msg void OnBnClickedButtonPrompt();
+	afx_msg void OnBnClickedButtonReset();
 };

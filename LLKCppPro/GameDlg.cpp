@@ -8,8 +8,6 @@
 #include "GameLogic.h"
 #include "GameControl.h"
 #include "global.h"
-#include <sstream>
-using namespace std;
 
 /*************************************************
 Copyright:AprilCal
@@ -63,10 +61,11 @@ BEGIN_MESSAGE_MAP(CGameDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON4, &CGameDlg::OnBnClickedButton4)
 	ON_BN_CLICKED(IDOK, &CGameDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CGameDlg::OnBnClickedCancel)
-	ON_BN_CLICKED(IDC_BUTTON3, &CGameDlg::OnBnClickedButton3)
+	//ON_BN_CLICKED(IDC_BUTTON3, &CGameDlg::OnBnClickedButton3)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_Pause, &CGameDlg::OnBnClickedButtonPause)
 	ON_BN_CLICKED(IDC_BUTTON_PROMPT, &CGameDlg::OnBnClickedButtonPrompt)
+	ON_BN_CLICKED(IDC_BUTTON_RESET, &CGameDlg::OnBnClickedButtonReset)
 END_MESSAGE_MAP()
 
 BEGIN_DISPATCH_MAP(CGameDlg, CDialogEx)
@@ -100,7 +99,7 @@ BOOL CGameDlg::OnInitDialog()
 	m_ctrlProgress.SetRange(0, 10);
 
 	//设置进度条的每一步的增量
-	m_ctrlProgress.SetStep(1);
+	m_ctrlProgress.SetStep(-1);
 
 	//设置进度条的当前位置
 	m_ctrlProgress.SetPos(10);
@@ -198,7 +197,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	else
 	{
-		if (gamecontrol.m_pGameMap[row][col] != BLANK)
+		if (!m_bPaused&&m_bPlaying && gamecontrol.m_pGameMap[row][col] != BLANK)
 		{
 			CClientDC dc(this);
 			CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
@@ -206,7 +205,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 			dc.SelectStockObject(NULL_BRUSH);
 			dc.Rectangle(TruenLeft + nElemW*col, TruenTop + nElemH*row, TruenLeft + nElemW*col + 40, TruenTop + nElemH*row + 40);
 		}
-		if ((gamecontrol.m_pGameMap[row][col] != BLANK))
+		if (!m_bPaused&&m_bPlaying && gamecontrol.m_pGameMap[row][col] != BLANK)
 		{
 			if (m_bFirstPoint.nRow == 12)//一共12行,0-11，不会用到12
 			{
@@ -272,10 +271,11 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CGameDlg::OnBnClickedButton1()
 {
+	m_bPlaying = true;
+	m_ctrlProgress.SetPos(10);
 	CClientDC dc(this);
 	count = 0;
 	gamecontrol.m_pGameMap = gamelogic.InitMap();
-	//InitBackground();
 	UpdateWindow();
 	InitElement();
 	UpdateMap();
@@ -333,40 +333,40 @@ void CGameDlg::DrawLine(Path *path)
 }
 
 
-void CGameDlg::OnBnClickedButton3()
-{
-	Path *path = new Path();
-	for (int i = 1;i < RowElementNum + 1;i++)
-	{
-		for (int j = 1;j < ColElementNum + 1;j++)
-		{
-			if (gamecontrol.m_pGameMap[i][j] != BLANK)
-			{
-				for (int m = 1;m < RowElementNum;m++)
-				{
-					for (int n = 1;n < ColElementNum;n++)
-					{
-						if (i == m&&j == n)
-						{
-							continue;
-						}
-						else
-						{
-							if (gamelogic.IsSame(gamecontrol.m_pGameMap, { i,j }, { m,n }) &&
-								gamelogic.IsLink(path, gamecontrol.m_pGameMap, { i,j }, { m,n }))
-							{
-								DrawLine(path);
-								goto loop;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	AfxMessageBox(_T("无子可消"));
-	loop:int i;
-}
+//void CGameDlg::OnBnClickedButton3()
+//{
+//	Path *path = new Path();
+//	for (int i = 1;i < RowElementNum + 1;i++)
+//	{
+//		for (int j = 1;j < ColElementNum + 1;j++)
+//		{
+//			if (gamecontrol.m_pGameMap[i][j] != BLANK)
+//			{
+//				for (int m = 1;m < RowElementNum;m++)
+//				{
+//					for (int n = 1;n < ColElementNum;n++)
+//					{
+//						if (i == m&&j == n)
+//						{
+//							continue;
+//						}
+//						else
+//						{
+//							if (gamelogic.IsSame(gamecontrol.m_pGameMap, { i,j }, { m,n }) &&
+//								gamelogic.IsLink(path, gamecontrol.m_pGameMap, { i,j }, { m,n }))
+//							{
+//								DrawLine(path);
+//								goto loop;
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+//	AfxMessageBox(_T("无子可消"));
+//	loop:int i;
+//}
 
 void CGameDlg::FreePath(Path* path)
 {
@@ -387,8 +387,9 @@ void CGameDlg::OnTimer(UINT_PTR nIDEvent)
 		if (time > 0)
 		{
 			//time--;
+			m_ctrlProgress.StepIt();
 		}
-		m_ctrlProgress.SetPos(time);
+		//m_ctrlProgress.SetPos(time);
 		DrawTime();
 		/*if (time == 0)
 		{
@@ -478,9 +479,6 @@ void CGameDlg::JudgeWin()
 
 void CGameDlg::OnBnClickedButtonPause()
 {
-	
-	//CClientDC dc(this);
-	//dc.BitBlt(30, 30, 700, 700, &m_dcPause, 30, 30, SRCCOPY);
 	if (m_bPlaying == false)
 	{
 		return;
@@ -512,5 +510,54 @@ void CGameDlg::OnBnClickedButtonPause()
 
 void CGameDlg::OnBnClickedButtonPrompt()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	if (m_bPlaying && !m_bPaused)
+	{
+		Path *path = new Path();
+		for (int i = 1;i < RowElementNum + 1;i++)
+		{
+			for (int j = 1;j < ColElementNum + 1;j++)
+			{
+				if (gamecontrol.m_pGameMap[i][j] != BLANK)
+				{
+					for (int m = 1;m < RowElementNum;m++)
+					{
+						for (int n = 1;n < ColElementNum;n++)
+						{
+							if (i == m&&j == n)
+							{
+								continue;
+							}
+							else
+							{
+								if (gamelogic.IsSame(gamecontrol.m_pGameMap, { i,j }, { m,n }) &&
+									gamelogic.IsLink(path, gamecontrol.m_pGameMap, { i,j }, { m,n }))
+								{
+									DrawLine(path);
+									goto loop;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		AfxMessageBox(_T("无子可消"));
+	loop:int i;
+	}
+}
+
+
+void CGameDlg::OnBnClickedButtonReset()
+{
+	if (m_bPlaying && !m_bPaused)
+	{
+		gamecontrol.ResetMap();
+		CClientDC dc(this);
+		UpdateMap();
+		dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+		if (count >= 160)
+		{
+			AfxMessageBox(_T("请重新开始"));
+		}
+	}
 }
