@@ -20,3 +20,8 @@ struct Path
 	Vertex v;
 	Path* next;
 };
+
+struct Score
+{
+	int time;
+};

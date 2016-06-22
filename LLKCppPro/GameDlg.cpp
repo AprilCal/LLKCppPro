@@ -45,12 +45,7 @@ void CGameDlg::OnFinalRelease()
 void CGameDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	//  DDX_Control(pDX, IDC_PROGRESS1, m_ctrlProgress);
-	//  DDX_Control(pDX, IDC_PROGRESS1, m_ctrlProgress);
 	DDX_Control(pDX, IDC_PROGRESS1, m_ctrlProgress);
-	//  DDX_Control(pDX, IDC_EDIT1, m_Label);
-	//  DDX_Control(pDX, IDCANCEL, m_Label);
-	//  DDX_Control(pDX, IDC_EDIT2, m_Time);
 }
 
 
@@ -58,7 +53,7 @@ BEGIN_MESSAGE_MAP(CGameDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_LBUTTONUP()
 	ON_BN_CLICKED(IDC_BUTTON1, &CGameDlg::OnBnClickedButton1)
-	ON_BN_CLICKED(IDC_BUTTON4, &CGameDlg::OnBnClickedButton4)
+	//ON_BN_CLICKED(IDC_BUTTON4, &CGameDlg::OnBnClickedButton4)
 	ON_BN_CLICKED(IDOK, &CGameDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CGameDlg::OnBnClickedCancel)
 	//ON_BN_CLICKED(IDC_BUTTON3, &CGameDlg::OnBnClickedButton3)
@@ -94,15 +89,14 @@ BOOL CGameDlg::OnInitDialog()
 	UpdateWindow();
 
 	//设置进度条的范围
-	time = 10;
 	UpdateData(false);
-	m_ctrlProgress.SetRange(0, 10);
+	m_ctrlProgress.SetRange(0, 300);
 
 	//设置进度条的每一步的增量
 	m_ctrlProgress.SetStep(-1);
 
 	//设置进度条的当前位置
-	m_ctrlProgress.SetPos(10);
+	m_ctrlProgress.SetPos(300);
 	
 	CDialogEx::OnInitDialog();
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -125,7 +119,6 @@ void CGameDlg::InitBackground()
 void CGameDlg::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
-					   // TODO: 在此处添加消息处理程序代码
 					   // 不为绘图消息调用 CDialogEx::OnPaint()
 	dc.BitBlt(0, 0, 800, 600, &m_dcMem, 0, 0, SRCCOPY);
 }
@@ -172,9 +165,11 @@ void CGameDlg::UpdateMap()
 			//get picture num
 			int nElemVal = gamecontrol.GetElement(i+1, j+1);
 			//||
-			m_dcMem.BitBlt(nLeft + j*nElemW, nTop + i*nElemH, nElemW, nElemH, &m_dcMask, 0, nElemVal*nElemH,SRCPAINT);
+			m_dcMem.BitBlt(nLeft + j*nElemW, nTop + i*nElemH, nElemW, nElemH,
+				&m_dcMask, 0, nElemVal*nElemH,SRCPAINT);
 			//&&
-			m_dcMem.BitBlt(nLeft + j*nElemW, nTop + i*nElemH, nElemW, nElemH, &m_dcElement, 0, nElemVal*nElemH, SRCAND);
+			m_dcMem.BitBlt(nLeft + j*nElemW, nTop + i*nElemH, nElemW, nElemH,
+				&m_dcElement, 0, nElemVal*nElemH, SRCAND);
 		}
 	}
 }
@@ -272,7 +267,7 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 void CGameDlg::OnBnClickedButton1()
 {
 	m_bPlaying = true;
-	m_ctrlProgress.SetPos(10);
+	m_ctrlProgress.SetPos(300);
 	CClientDC dc(this);
 	count = 0;
 	gamecontrol.m_pGameMap = gamelogic.InitMap();
@@ -292,19 +287,6 @@ void CGameDlg::OnBnClickedButton1()
 	//SetTimer(1, 1000, NULL);//此为一个定时器
 	SetTimer(PLAY_TIMER_ID, 1000, NULL);
 	UpdateData(FALSE);
-}
-
-
-void CGameDlg::OnBnClickedButton4()
-{
-	gamecontrol.ResetMap();
-	CClientDC dc(this); 
-	UpdateMap();
-	dc.BitBlt( 0, 0, ColElementNum*nElemW+nLeft, RowElementNum*nElemH+nTop, &m_dcMem, 0, 0, SRCCOPY);
-	if (count >= 160)
-	{
-		AfxMessageBox(_T("请重新开始"));
-	}
 }
 
 void CGameDlg::OnBnClickedOk()
@@ -332,42 +314,6 @@ void CGameDlg::DrawLine(Path *path)
 	}
 }
 
-
-//void CGameDlg::OnBnClickedButton3()
-//{
-//	Path *path = new Path();
-//	for (int i = 1;i < RowElementNum + 1;i++)
-//	{
-//		for (int j = 1;j < ColElementNum + 1;j++)
-//		{
-//			if (gamecontrol.m_pGameMap[i][j] != BLANK)
-//			{
-//				for (int m = 1;m < RowElementNum;m++)
-//				{
-//					for (int n = 1;n < ColElementNum;n++)
-//					{
-//						if (i == m&&j == n)
-//						{
-//							continue;
-//						}
-//						else
-//						{
-//							if (gamelogic.IsSame(gamecontrol.m_pGameMap, { i,j }, { m,n }) &&
-//								gamelogic.IsLink(path, gamecontrol.m_pGameMap, { i,j }, { m,n }))
-//							{
-//								DrawLine(path);
-//								goto loop;
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//	AfxMessageBox(_T("无子可消"));
-//	loop:int i;
-//}
-
 void CGameDlg::FreePath(Path* path)
 {
 	Path *p = path;
@@ -384,17 +330,8 @@ void CGameDlg::OnTimer(UINT_PTR nIDEvent)
 	JudgeWin();
 	if (nIDEvent == PLAY_TIMER_ID && m_bPlaying && !m_bPaused)
 	{
-		if (time > 0)
-		{
-			//time--;
-			m_ctrlProgress.StepIt();
-		}
-		//m_ctrlProgress.SetPos(time);
+		m_ctrlProgress.StepIt();
 		DrawTime();
-		/*if (time == 0)
-		{
-			AfxMessageBox(_T("时间到!!!"));
-		}*/
 	}
 	
 	CDialogEx::OnTimer(nIDEvent);
@@ -426,11 +363,8 @@ void CGameDlg::DrawTime()
 	CString time;
 	time.Format(_T("%3d"), m_ctrlProgress.GetPos());
 
-	//设置输出位置为进度条旁
-	dc.TextOut(rect.left + rect.Width(), rect.top, time);
-
 	//用空格控制保证每次输出文本长度一致
-	if (m_ctrlProgress.GetPos() >= 10 && m_ctrlProgress.GetPos() < 100)
+	if (m_ctrlProgress.GetPos() >= 10 && m_ctrlProgress.GetPos() < 300)
 	{
 		CString time;
 		time.Format(_T("%-3d "), m_ctrlProgress.GetPos());
@@ -466,6 +400,24 @@ void CGameDlg::JudgeWin()
 		this->GetWindowTextW(strTitle);
 		if (bGameStatus == GAME_SUCCESS)
 		{
+			for (int i = 0;i < 10;i++)
+			{
+				if ((300 - m_ctrlProgress.GetPos()) < rank[i].time)
+				{
+					rank[i].time = (300 - m_ctrlProgress.GetPos());
+					//FILE *in2;
+					FILE *out;
+					errno_t err3 = fopen_s(&out, "score\\score.txt", "wb");
+					//errno_t err2 = fopen_s(&in2, "score\\score.txt", "rb");
+					for (int j = 0;j < 10;j++)
+					{
+						fwrite(&rank[j], sizeof(Score), 1, out);
+					}
+					//fclose(in2);
+					fclose(out);
+					break;
+				}
+			}
 			MessageBox(_T("恭喜您获胜！"), strTitle);
 		}
 		else if (bGameStatus == GAME_LOSE)

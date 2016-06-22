@@ -61,7 +61,7 @@ protected:
 	int TruenLeft = -20;
 	int TruenTop = 10;
 	int count = 0;
-	int time = 0;
+	//int time = 0;
 	CFont font;
 
 	CRect m_rtGameRect;
@@ -72,6 +72,8 @@ protected:
 	bool m_bPlaying = false;
 	bool m_bPaused = false;
 
+	Score rank[10] = { 300 };
+
 	Vertex m_bFirstPoint = {11,0};
 	Vertex m_bSecPoint = {11,0};
 public:
@@ -79,10 +81,8 @@ public:
 	afx_msg void OnPaint();
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedButton1();
-	afx_msg void OnBnClickedButton4();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
-	afx_msg void OnBnClickedButton3();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
 	CProgressCtrl m_ctrlProgress;

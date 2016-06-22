@@ -63,11 +63,12 @@ protected:
 	bool m_bPlaying = true;
 	bool m_bPaused = false;
 
-	Vertex m_bFirstPoint = { 11,0 };
-	Vertex m_bSecPoint = { 11,0 };
+	Vertex m_bFirstPoint = { 12,0 };
+	Vertex m_bSecPoint = { 12,0 };
 public:
 	afx_msg void OnPaint();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedButtonStartgame();
+	afx_msg void OnBnClickedButtonResetG();
 };
