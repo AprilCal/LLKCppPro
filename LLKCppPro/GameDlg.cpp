@@ -87,6 +87,7 @@ BOOL CGameDlg::OnInitDialog()
 	InitDC();
 	InitBackground();
 	UpdateWindow();
+	InitRank();
 
 	//设置进度条的范围
 	UpdateData(false);
@@ -252,15 +253,15 @@ void CGameDlg::OnLButtonUp(UINT nFlags, CPoint point)
 			}//else
 		}
 	}
-	if (count >= RowElementNum*ColElementNum && time>=0)
-	{
-		AfxMessageBox(_T("You Win"));
-		CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON1); //IDC_BUTTON2这个按钮 
-		if (pBtn != NULL)
-		{
-			pBtn->EnableWindow(TRUE); // True or False 
-		}
-	}
+	//if (count >= RowElementNum*ColElementNum && time>=0)
+	//{
+	//	AfxMessageBox(_T("You Win"));
+	//	CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON1); //IDC_BUTTON2这个按钮 
+	//	if (pBtn != NULL)
+	//	{
+	//		pBtn->EnableWindow(TRUE); // True or False 
+	//	}
+	//}
 }
 
 
@@ -400,21 +401,23 @@ void CGameDlg::JudgeWin()
 		this->GetWindowTextW(strTitle);
 		if (bGameStatus == GAME_SUCCESS)
 		{
-			for (int i = 0;i < 10;i++)
+			for (int i = 0;i <10;i++)
 			{
 				if ((300 - m_ctrlProgress.GetPos()) < rank[i].time)
 				{
+					for (int k = 9;k > i;k--)
+					{
+						rank[k] = rank[k - 1];
+					}
 					rank[i].time = (300 - m_ctrlProgress.GetPos());
-					//FILE *in2;
 					FILE *out;
 					errno_t err3 = fopen_s(&out, "score\\score.txt", "wb");
-					//errno_t err2 = fopen_s(&in2, "score\\score.txt", "rb");
 					for (int j = 0;j < 10;j++)
 					{
 						fwrite(&rank[j], sizeof(Score), 1, out);
 					}
-					//fclose(in2);
 					fclose(out);
+					AfxMessageBox(_T("新纪录！"));
 					break;
 				}
 			}
@@ -512,4 +515,22 @@ void CGameDlg::OnBnClickedButtonReset()
 			AfxMessageBox(_T("请重新开始"));
 		}
 	}
+}
+
+void CGameDlg::InitRank()
+{
+	/*for (int i = 0;i < 10;i++)
+	{
+		rank[i].time=300;
+	}*/
+
+	//read file head
+	FILE *_in;
+	errno_t _err = fopen_s(&_in, "score\\score.txt", "rb");
+
+	for (int i = 0;i < 10;i++)
+	{
+		fread(&rank[i], sizeof(Score), 1, _in);
+	}
+	fclose(_in);
 }

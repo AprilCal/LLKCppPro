@@ -47,6 +47,7 @@ protected:
 	void FreePath(Path *path);
 	void DrawTime();
 	void JudgeWin();
+	void InitRank();
 
 	CDC m_dcMem;
 	CDC m_dcElement;
@@ -72,7 +73,7 @@ protected:
 	bool m_bPlaying = false;
 	bool m_bPaused = false;
 
-	Score rank[10] = { 300 };
+	Score rank[10];
 
 	Vertex m_bFirstPoint = {11,0};
 	Vertex m_bSecPoint = {11,0};

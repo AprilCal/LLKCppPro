@@ -9,6 +9,8 @@
 #include "afxdialogex.h"
 #include "GameDlg.h"
 #include "GameDlg_G.h"
+#include "Rank.h"
+#include "Help.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -75,6 +77,8 @@ BEGIN_MESSAGE_MAP(CLLKCppProDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CLLKCppProDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CLLKCppProDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_BUTTON5, &CLLKCppProDlg::OnBnClickedButton5)
+	ON_BN_CLICKED(IDC_BUTTON_RANK, &CLLKCppProDlg::OnBnClickedButtonRank)
+	ON_BN_CLICKED(IDC_BUTTON_HELP, &CLLKCppProDlg::OnBnClickedButtonHelp)
 END_MESSAGE_MAP()
 
 
@@ -203,5 +207,21 @@ void CLLKCppProDlg::OnBnClickedButton5()
 	ShowWindow(SW_HIDE);
 	CGameDlg_G dlg;
 	dlg.DoModal();
+	ShowWindow(SW_SHOW);
+}
+
+
+void CLLKCppProDlg::OnBnClickedButtonRank()
+{
+	CRank rank;
+	rank.DoModal();
+	ShowWindow(SW_SHOW);
+}
+
+
+void CLLKCppProDlg::OnBnClickedButtonHelp()
+{
+	CHelp help;
+	help.DoModal();
 	ShowWindow(SW_SHOW);
 }
