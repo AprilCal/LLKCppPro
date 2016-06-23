@@ -8,6 +8,8 @@
 #include "global.h"
 #include "GameLogic.h"
 #include "GameControl.h"
+#include "Setting.h"
+#include "Help.h"
 
 // CGameDlg_G 对话框
 
@@ -34,6 +36,9 @@ BEGIN_MESSAGE_MAP(CGameDlg_G, CDialogEx)
 	ON_WM_LBUTTONUP()
 	ON_BN_CLICKED(IDC_BUTTON_StartGame, &CGameDlg_G::OnBnClickedButtonStartgame)
 	ON_BN_CLICKED(IDC_BUTTON_RESET_G, &CGameDlg_G::OnBnClickedButtonResetG)
+	ON_BN_CLICKED(IDC_BUTTON_HELP_G, &CGameDlg_G::OnBnClickedButtonHelpG)
+	ON_BN_CLICKED(IDC_BUTTON_SETTING_G, &CGameDlg_G::OnBnClickedButtonSettingG)
+	ON_BN_CLICKED(IDC_BUTTON_PROMPT_G, &CGameDlg_G::OnBnClickedButtonPromptG)
 END_MESSAGE_MAP()
 
 
@@ -137,7 +142,7 @@ void CGameDlg_G::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	else
 	{
-		if (gamecontrol.m_pGameMap[row][col] != BLANK)
+		if (m_bPlaying && gamecontrol.m_pGameMap[row][col] != BLANK)
 		{
 			CClientDC dc(this);
 			CPen penRect(PS_SOLID, 2, RGB(0, 255, 0));
@@ -145,7 +150,7 @@ void CGameDlg_G::OnLButtonUp(UINT nFlags, CPoint point)
 			dc.SelectStockObject(NULL_BRUSH);
 			dc.Rectangle(TruenLeft + nElemW*col, TruenTop + nElemH*row, TruenLeft + nElemW*col + 40, TruenTop + nElemH*row + 40);
 		}
-		if ((gamecontrol.m_pGameMap[row][col] != BLANK))
+		if (m_bPlaying && gamecontrol.m_pGameMap[row][col] != BLANK)
 		{
 			if (m_bFirstPoint.nRow == 12)//一共12行,0-11，不会用到12
 			{
@@ -199,6 +204,7 @@ void CGameDlg_G::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	if (count >= RowElementNum*ColElementNum && time >= 0)
 	{
+		m_bPlaying = false;
 		AfxMessageBox(_T("You Win"));
 		CButton *pBtn = (CButton *)GetDlgItem(IDC_BUTTON1); //IDC_BUTTON2这个按钮 
 		if (pBtn != NULL)
@@ -212,6 +218,7 @@ void CGameDlg_G::OnLButtonUp(UINT nFlags, CPoint point)
 void CGameDlg_G::OnBnClickedButtonStartgame()
 {
 	CClientDC dc(this);
+	m_bPlaying = true;
 	count = 0;
 	gamecontrol.m_pGameMap = gamelogic.InitMap();
 	//InitBackground();
@@ -236,9 +243,14 @@ void CGameDlg_G::OnBnClickedButtonStartgame()
 
 void CGameDlg_G::OnBnClickedButtonResetG()
 {
-	CClientDC dc(this);
-	UpdateMap();
-	dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+		gamecontrol.ResetMap();
+		CClientDC dc(this);
+		UpdateMap();
+		dc.BitBlt(0, 0, ColElementNum*nElemW + nLeft, RowElementNum*nElemH + nTop, &m_dcMem, 0, 0, SRCCOPY);
+		if (count >= 160)
+		{
+			AfxMessageBox(_T("请重新开始"));
+		}
 }
 
 void CGameDlg_G::FreePath(Path* path)
@@ -266,3 +278,55 @@ void CGameDlg_G::DrawLine(Path *path)
 		dc.MoveTo(path->v.nCol * 40 + TruenLeft + nElemW / 2, path->v.nRow * 40 + TruenTop + nElemH / 2);
 	}
 }
+
+void CGameDlg_G::OnBnClickedButtonHelpG()
+{
+	CHelp help;
+	help.DoModal();
+	ShowWindow(SW_SHOW);
+}
+
+
+void CGameDlg_G::OnBnClickedButtonSettingG()
+{
+	CSetting setting;
+	setting.DoModal();
+	ShowWindow(SW_SHOW);
+}
+
+
+void CGameDlg_G::OnBnClickedButtonPromptG()
+{
+	Path *path = new Path();
+	for (int i = 1;i < RowElementNum + 1;i++)
+	{
+		for (int j = 1;j < ColElementNum + 1;j++)
+		{
+			if (gamecontrol.m_pGameMap[i][j] != BLANK)
+			{
+				for (int m = 1;m < RowElementNum;m++)
+				{
+					for (int n = 1;n < ColElementNum;n++)
+					{
+						if (i == m&&j == n)
+						{
+							continue;
+						}
+						else
+						{
+							if (gamelogic.IsSame(gamecontrol.m_pGameMap, { i,j }, { m,n }) &&
+								gamelogic.IsLink(path, gamecontrol.m_pGameMap, { i,j }, { m,n }))
+							{
+								DrawLine(path);
+								goto loop;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	AfxMessageBox(_T("无子可消"));
+	loop:int i;
+}
+

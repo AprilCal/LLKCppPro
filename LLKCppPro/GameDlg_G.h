@@ -36,8 +36,6 @@ protected:
 	void InitDC();
 	void DrawLine(Path *path);
 	void FreePath(Path *path);
-	void DrawTime();
-	void JudgeWin();
 
 	CDC m_dcMem;
 	CDC m_dcElement;
@@ -60,8 +58,7 @@ protected:
 	CGameLogic gamelogic;
 	CGameControl gamecontrol;
 
-	bool m_bPlaying = true;
-	bool m_bPaused = false;
+	bool m_bPlaying = false;
 
 	Vertex m_bFirstPoint = { 12,0 };
 	Vertex m_bSecPoint = { 12,0 };
@@ -71,4 +68,7 @@ public:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedButtonStartgame();
 	afx_msg void OnBnClickedButtonResetG();
+	afx_msg void OnBnClickedButtonHelpG();
+	afx_msg void OnBnClickedButtonSettingG();
+	afx_msg void OnBnClickedButtonPromptG();
 };

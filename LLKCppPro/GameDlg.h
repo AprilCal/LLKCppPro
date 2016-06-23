@@ -91,4 +91,6 @@ public:
 	afx_msg void OnBnClickedButtonPause();
 	afx_msg void OnBnClickedButtonPrompt();
 	afx_msg void OnBnClickedButtonReset();
+	afx_msg void OnBnClickedButtonSetting1();
+	afx_msg void OnBnClickedButtonHelp1();
 };

@@ -8,6 +8,8 @@
 #include "GameLogic.h"
 #include "GameControl.h"
 #include "global.h"
+#include "Setting.h"
+#include "Help.h"
 
 /*************************************************
 Copyright:AprilCal
@@ -61,6 +63,8 @@ BEGIN_MESSAGE_MAP(CGameDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_Pause, &CGameDlg::OnBnClickedButtonPause)
 	ON_BN_CLICKED(IDC_BUTTON_PROMPT, &CGameDlg::OnBnClickedButtonPrompt)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CGameDlg::OnBnClickedButtonReset)
+	ON_BN_CLICKED(IDC_BUTTON_SETTING1, &CGameDlg::OnBnClickedButtonSetting1)
+	ON_BN_CLICKED(IDC_BUTTON_HELP1, &CGameDlg::OnBnClickedButtonHelp1)
 END_MESSAGE_MAP()
 
 BEGIN_DISPATCH_MAP(CGameDlg, CDialogEx)
@@ -533,4 +537,19 @@ void CGameDlg::InitRank()
 		fread(&rank[i], sizeof(Score), 1, _in);
 	}
 	fclose(_in);
+}
+
+void CGameDlg::OnBnClickedButtonSetting1()
+{
+	CSetting setting;
+	setting.DoModal();
+	ShowWindow(SW_SHOW);
+}
+
+
+void CGameDlg::OnBnClickedButtonHelp1()
+{
+	CHelp help;
+	help.DoModal();
+	ShowWindow(SW_SHOW);
 }

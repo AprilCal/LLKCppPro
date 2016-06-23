@@ -45,4 +45,5 @@ public:
 	afx_msg void OnBnClickedButton5();
 	afx_msg void OnBnClickedButtonRank();
 	afx_msg void OnBnClickedButtonHelp();
+	afx_msg void OnBnClickedButtonSetting();
 };

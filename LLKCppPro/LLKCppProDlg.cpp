@@ -11,6 +11,7 @@
 #include "GameDlg_G.h"
 #include "Rank.h"
 #include "Help.h"
+#include "Setting.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -79,6 +80,7 @@ BEGIN_MESSAGE_MAP(CLLKCppProDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON5, &CLLKCppProDlg::OnBnClickedButton5)
 	ON_BN_CLICKED(IDC_BUTTON_RANK, &CLLKCppProDlg::OnBnClickedButtonRank)
 	ON_BN_CLICKED(IDC_BUTTON_HELP, &CLLKCppProDlg::OnBnClickedButtonHelp)
+	ON_BN_CLICKED(IDC_BUTTON_SETTING, &CLLKCppProDlg::OnBnClickedButtonSetting)
 END_MESSAGE_MAP()
 
 
@@ -223,5 +225,13 @@ void CLLKCppProDlg::OnBnClickedButtonHelp()
 {
 	CHelp help;
 	help.DoModal();
+	ShowWindow(SW_SHOW);
+}
+
+
+void CLLKCppProDlg::OnBnClickedButtonSetting()
+{
+	CSetting setting;
+	setting.DoModal();
 	ShowWindow(SW_SHOW);
 }
