@@ -1,10 +1,20 @@
-﻿  GameDlg.cpp
-GameDlg.cpp(328): warning C4101: “i”: 未引用的局部变量
+﻿  stdafx.cpp
+  GameControl.cpp
+  GameControl_G.cpp
+  GameDlg.cpp
+GameDlg.cpp(504): warning C4101: “i”: 未引用的局部变量
+  GameDlg_G.cpp
+GameDlg_G.cpp(334): warning C4101: “i”: 未引用的局部变量
   GameLogic.cpp
+  GameLogic_G.cpp
+  Graph.cpp
+  Help.cpp
+  LLKCppPro.cpp
+  LLKCppProDlg.cpp
+  Rank.cpp
+  Setting.cpp
   正在生成代码
-  9 of 255 functions ( 3.5%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+  All 395 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   已完成代码的生成
   LLKCppPro.vcxproj -> D:\VSWorkSpace\project\LLKCppPro\Release\LLKCppPro.exe
   LLKCppPro.vcxproj -> D:\VSWorkSpace\project\LLKCppPro\Release\LLKCppPro.pdb (Full PDB)

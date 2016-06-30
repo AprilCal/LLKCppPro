@@ -62,6 +62,10 @@ BOOL CGameDlg_G::OnInitDialog()
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	SetIcon(m_hIcon, FALSE);
 
+	CDialogEx::OnInitDialog();
+	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	SetIcon(m_hIcon, FALSE);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
